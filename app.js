@@ -33,28 +33,19 @@ for (const folder of commandFolders) {
 	}
 }
 
-//Handle command interactions
-client.on(Events.InteractionCreate, async interaction => {
-	if (!interaction.isChatInputCommand()) return
+//Event handling
+const eventsPath = path.join(__dirname, 'events')
+const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'))
 
-	const command = interaction.client.commands.get(interaction.commandName)
-
-	if (!command) {
-		console.error(`Command ${interaction.commandName} was not found.`)
-		return
+for (const file of eventFiles) {
+	const filePath = path.join('file://', eventsPath, file)
+	const event = (await import (filePath)).event
+	if (event.once) {
+		client.once(event.name, (...args) => event.execute(...args))
+	} else {
+		client.on(event.name, (...args) => event.execute(...args))
 	}
-
-	try {
-		await command.execute(interaction)
-	} catch (error) {
-		console.error(error)
-		if (interaction.replied || interaction.deferred) {
-			await interaction.followUp({ content: `Error while executing command ${interaction.commandName}!`, ephemeral: true })
-		} else {
-			await interaction.reply({ content: `Error while executing command ${interaction.commandName}!`, ephemeral: true })
-		}
-	}
-})
+}
 
 //Login with token
 client.login(process.env.DISCORD_TOKEN)
