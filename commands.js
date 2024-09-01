@@ -1,49 +1,51 @@
-import 'dotenv/config';
-import { getRPSChoices } from './game.js';
-import { capitalize, InstallGlobalCommands } from './utils.js';
+import { REST, Routes } from 'discord.js'
+import 'dotenv/config'
+import path from 'path'
+import fs from 'fs'
+import { fileURLToPath } from 'url'
 
-// Get the game choices from game.js
-function createCommandChoices() {
-  const choices = getRPSChoices();
-  const commandChoices = [];
 
-  for (let choice of choices) {
-    commandChoices.push({
-      name: capitalize(choice),
-      value: choice.toLowerCase(),
-    });
-  }
+const commands = []
+// Grab all the command folders from the commands directory you created earlier
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const foldersPath = path.join(__dirname, 'commands')
+const commandFolders = fs.readdirSync(foldersPath)
 
-  return commandChoices;
+for (const folder of commandFolders) {
+	// Grab all the command files from the commands directory you created earlier
+	const commandsPath = path.join(foldersPath, folder)
+	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'))
+	// Grab the SlashCommandBuilder#toJSON() output of each command's data for deployment
+	for (const file of commandFiles) {
+		const filePath = path.join('file://', commandsPath, file)
+    console.log(filePath)
+		const command = (await import(filePath)).command
+    console.log(command)
+		if ('data' in command && 'execute' in command) {
+			commands.push(command.data.toJSON())
+		} else {
+			console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`)
+		}
+	}
 }
 
-// Simple test command
-const TEST_COMMAND = {
-  name: 'test',
-  description: 'Basic command',
-  type: 1,
-  integration_types: [0, 1],
-  contexts: [0, 1, 2],
-};
+// Construct and prepare an instance of the REST module
+const rest = new REST().setToken(process.env.DISCORD_TOKEN);
 
-// Command containing options
-const CHALLENGE_COMMAND = {
-  name: 'challenge',
-  description: 'Challenge to a match of rock paper scissors',
-  options: [
-    {
-      type: 3,
-      name: 'object',
-      description: 'Pick your object',
-      required: true,
-      choices: createCommandChoices(),
-    },
-  ],
-  type: 1,
-  integration_types: [0, 1],
-  contexts: [0, 2],
-};
+// and deploy your commands!
+(async () => {
+	try {
+		console.log(`Started refreshing ${commands.length} application (/) commands.`)
 
-const ALL_COMMANDS = [TEST_COMMAND, CHALLENGE_COMMAND];
+		// The put method is used to fully refresh all commands in the guild with the current set
+		const data = await rest.put(
+			Routes.applicationCommands(process.env.APP_ID),
+			{ body: commands },
+		)
 
-InstallGlobalCommands(process.env.APP_ID, ALL_COMMANDS);
+		console.log(`Successfully reloaded ${data.length} application (/) commands.`)
+	} catch (error) {
+		// And of course, make sure you catch and log any errors!
+		console.error(error)
+	}
+})()
