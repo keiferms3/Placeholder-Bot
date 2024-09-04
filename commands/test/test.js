@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "discord.js"
 
-export const command = {
+export default {
     data: new SlashCommandBuilder()
         .setName('test')
         .setDescription('Tests a basic command!'),

@@ -20,7 +20,7 @@ for (const folder of commandFolders) {
 	for (const file of commandFiles) {
 		const filePath = path.join('file://', commandsPath, file)
     console.log(filePath)
-		const command = (await import(filePath)).command
+		const command = (await import(filePath))
     console.log(command)
 		if ('data' in command && 'execute' in command) {
 			commands.push(command.data.toJSON())

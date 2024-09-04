@@ -3,6 +3,7 @@ import { Client, Events, GatewayIntentBits, Collection } from 'discord.js'
 import path from 'path'
 import fs from 'fs'
 import { fileURLToPath } from 'url'
+import { Sequelize } from 'sequelize'
 
 //Start client
 const client = new Client({ intents: [GatewayIntentBits.Guilds] })
@@ -23,7 +24,7 @@ for (const folder of commandFolders) {
 	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'))
 	for (const file of commandFiles) {
 		const filePath = path.join('file://', commandsPath, file)
-		const command = (await import(filePath)).command
+		const command = (await import(filePath))
 		// Set a new item in the Collection with the key as the command name and the value as the exported module
 		if ('data' in command && 'execute' in command) {
 			client.commands.set(command.data.name, command)
@@ -39,7 +40,7 @@ const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'
 
 for (const file of eventFiles) {
 	const filePath = path.join('file://', eventsPath, file)
-	const event = (await import (filePath)).event
+	const event = (await import (filePath))
 	if (event.once) {
 		client.once(event.name, (...args) => event.execute(...args))
 	} else {
