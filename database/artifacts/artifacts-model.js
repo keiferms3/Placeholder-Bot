@@ -3,6 +3,7 @@ export default (database, DataTypes) => {
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
+            autoIncrement: true,
         },
         name: {
             type: DataTypes.STRING,
@@ -15,7 +16,11 @@ export default (database, DataTypes) => {
         },
         image: {
             type: DataTypes.STRING
-        }
+        },
+        owner: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
    }, {
         timestamps: false,
    })

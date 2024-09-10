@@ -1,14 +1,10 @@
 import 'dotenv/config'
 import { Client, Events, GatewayIntentBits, Collection } from 'discord.js'
-import { Sequelize } from 'sequelize'
-import { IterateFolder } from './helpers.js'
+import { IterateFolder, ResetCooldown } from './helpers.js'
+import { CronJob } from 'cron'
 
 //Start client
-const client = new Client({ intents: [GatewayIntentBits.Guilds] })
-
-client.once(Events.ClientReady, readyClient => {
-	console.log(`Ready! Logged in as ${readyClient.user.tag}`)
-})
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers] })
 
 //Parse commands from commands folder
 client.commands = await IterateFolder('commands', '.js', async (file, filePath) => {
@@ -20,6 +16,9 @@ client.commands = await IterateFolder('commands', '.js', async (file, filePath) 
 	}
 })
 
+//Setup cooldowns
+client.cooldowns = new Collection()
+client.cooldowns.set('daily', new Collection())
 //Event handling
 IterateFolder('events', '.js', async (file, filePath) => {
 	const event = (await import (filePath)).default
@@ -30,6 +29,18 @@ IterateFolder('events', '.js', async (file, filePath) => {
 	}
 })
 
+//On login handler
+client.once(Events.ClientReady, (readyClient) => {
+	//Setup cronjobs
+	const daily = new CronJob('00 00 00 * * *', () => {
+		console.log('Reset!!!')
+		ResetCooldown('daily', readyClient)
+	})
+	daily.start()
+
+	//Print ready status
+	console.log(`Online as ${readyClient.user.tag}`)
+})
 
 //Login with token
 client.login(process.env.DISCORD_TOKEN)

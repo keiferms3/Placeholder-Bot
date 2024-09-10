@@ -1,15 +1,12 @@
 import { REST, Routes, Collection } from 'discord.js'
 import 'dotenv/config'
-import path from 'path'
-import fs from 'fs'
-import { fileURLToPath } from 'url'
 import { IterateFolder } from './helpers.js'
 
 
 const commandsCollection = await IterateFolder('commands', '.js', async (file, filePath) => {
 	const command = (await import(filePath)).default
 	if ('data' in command && 'execute' in command) {
-		return {key: file, value: command.data.toJSON()}
+		return {key: command.data.name, value: command.data.toJSON()}
 	} else {
 		console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`)
 	}

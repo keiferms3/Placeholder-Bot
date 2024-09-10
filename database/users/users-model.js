@@ -3,19 +3,34 @@ export default (database, DataTypes) => {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
+        autoIncrement: true,
     },
-    username: {
+    userid: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
+    },
+    guildid: {
+        type: DataTypes.STRING,
+        allowNull: false,
     },
     points: {
         type: DataTypes.INTEGER,
         defaultValue: 0,
         allowNull: false,
     },
+    gifts: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+        allowNull: false,
+    },
 }, {
     timestamps: false,
+    indexes: [
+        {
+            unique: true,
+            fields: ['userid', 'guildid']
+        }
+    ]
 })
 }
 
