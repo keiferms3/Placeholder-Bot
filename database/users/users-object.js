@@ -3,7 +3,6 @@ import { UsersModel } from "../database.js"
 const Users = UsersModel
 
 Users.updateBalance = async function (uid, gid, pointval, giftval) {
-    console.log(uid, gid, pointval, giftval)
     try {
         return await Users.increment({ points: pointval, gifts: giftval }, { where: { userid: uid, guildid: gid}})
     } catch (e) {
