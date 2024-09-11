@@ -19,6 +19,7 @@ client.commands = await IterateFolder('commands', '.js', async (file, filePath) 
 //Setup cooldowns
 client.cooldowns = new Collection()
 client.cooldowns.set('daily', new Collection())
+
 //Event handling
 IterateFolder('events', '.js', async (file, filePath) => {
 	const event = (await import (filePath)).default
@@ -29,7 +30,7 @@ IterateFolder('events', '.js', async (file, filePath) => {
 	}
 })
 
-//On login handler
+//Startup handler
 client.once(Events.ClientReady, (readyClient) => {
 	//Setup cronjobs
 	const daily = new CronJob('00 00 00 * * *', () => {

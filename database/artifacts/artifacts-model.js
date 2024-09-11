@@ -1,5 +1,5 @@
 export default (database, DataTypes) => {
-    return database.define('artifacts', {
+    return database.define('Artifacts', {
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,

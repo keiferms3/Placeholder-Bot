@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, Collection } from "discord.js"
-import { Users } from "../database/users/users-object.js"
+import { Config, Users } from "../database/objects.js"
 
 export default {
     data: new SlashCommandBuilder()
@@ -19,17 +19,19 @@ export default {
 
 async function daily(interaction) {
     try {
-        const user = interaction.user.id
-        const guild = interaction.guild.id
+        const userId = interaction.user.id
+        const guildId = interaction.guild.id
         const guildCooldowns = interaction.client.cooldowns.get('daily')
 
-        if (!guildCooldowns.get(guild)) {
-            guildCooldowns.set(guild, new Collection())
+        if (!guildCooldowns.get(guildId)) {
+            guildCooldowns.set(guildId, new Collection())
         }
-        const cooldowns = guildCooldowns.get(guild)
-        if (!cooldowns.get(user)) {
-            await Users.updateBalance(user, guild, 5, 20)
-            cooldowns.set(user, true)
+
+        const cooldowns = guildCooldowns.get(guildId)
+        if (!cooldowns.get(userId)) {
+            const config = await Config.getOption(guildId)
+            await Users.updateBalance(userId, guildId, config.dailyPoints, config.dailyGifts)
+            cooldowns.set(userId, true)
             return 'Daily points redeemed!'
         } else {
             return 'Daily points on cooldown, resets at 12am EST!'

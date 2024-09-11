@@ -18,13 +18,14 @@ const models = await IterateFolders('database', '-model.js', async (file, fullPa
 //Pull out models for exporting
 export const UsersModel = models.get('users-model.js')
 export const ArtifactsModel = models.get('artifacts-model.js')
+export const ConfigModel = models.get('config-model.js')
 
 //Sync db
 const force = process.argv.includes('--force') || process.argv.includes('-f');
 sequelize.sync({force}).then(async () => {
 	//populate db with data
 	const data = [
-		//UsersModel.upsert({ username: 'Bill', userid: '120939101', guildid: '1232131231' points: 5, gifts: 10 }),
+		//UsersModel.upsert({ username: 'Bill', userId: '120939101', guildId: '1232131231' points: 5, gifts: 10 }),
 	]
 	await Promise.all(data)
 	

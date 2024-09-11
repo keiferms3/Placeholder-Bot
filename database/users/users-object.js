@@ -1,21 +1,21 @@
 import { UsersModel } from "../database.js"
 
-const Users = UsersModel
+const UsersObj = UsersModel
 
-Users.updateBalance = async function (uid, gid, pointval, giftval) {
+UsersObj.updateBalance = async function (uid, gid, pointval, giftval) {
     try {
-        return await Users.increment({ points: pointval, gifts: giftval }, { where: { userid: uid, guildid: gid}})
+        return await UsersObj.increment({ points: pointval, gifts: giftval }, { where: { userId: uid, guildId: gid }})
     } catch (e) {
         return e
     }
 }
 
-Users.createEntry = async function (uid, gid) {
+UsersObj.createEntry = async function (uid, gid) {
     try {
-        return await Users.create({ userid: uid, guildid: gid })
+        return await UsersObj.create({ userId: uid, guildId: gid })
     } catch (e) {
         return e
     }
 }
 
-export { Users }
+export { UsersObj }

@@ -1,15 +1,15 @@
 export default (database, DataTypes) => {
- return database.define('users', {
+ return database.define('Users', {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
     },
-    userid: {
+    userId: {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    guildid: {
+    guildId: {
         type: DataTypes.STRING,
         allowNull: false,
     },
@@ -28,7 +28,7 @@ export default (database, DataTypes) => {
     indexes: [
         {
             unique: true,
-            fields: ['userid', 'guildid']
+            fields: ['userId', 'guildId']
         }
     ]
 })
