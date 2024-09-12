@@ -26,7 +26,7 @@ async function pay(interaction) {
         const user = interaction.user
         const guild = interaction.guild
         const targetUser = interaction.options.getUser('user')
-        const points = interaction.options.getUser('points')
+        const points = interaction.options.getInteger('points')
 
         const config = Config.getConfig(guild.id)
         const Top = await Users.getUser(user.id, guild.id)
@@ -36,11 +36,13 @@ async function pay(interaction) {
             return `You do not have enough points`
         }
         if (Bottom.points + points > config.maxPoints) {
-            return `Recipient cannot take such a large load` //This error message will probably never be sent so hi whoever's reading the code
+            return `Recipient cannot take such a large load`
         }
         
-        Users.updateBalance(user.id, guild.id)
-        return ``
+        Users.updateBalance(user.id, guild.id, (points * -1))
+        Users.updateBalance(targetUser.id, guild.id, points)
+        
+        return `\`${user.globalName}\` paid \`${targetUser.globalName}\` \`${points} PP\``
     } catch (e) {
         return e
     }
