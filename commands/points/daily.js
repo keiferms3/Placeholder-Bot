@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, Collection } from "discord.js"
-import { Config, Users } from "../database/objects.js"
-import { CheckCooldown } from "../helpers.js"
+import { Config, Users } from "../../database/objects.js"
+import { CheckCooldown } from "../../helpers.js"
 
 export default {
     data: new SlashCommandBuilder()

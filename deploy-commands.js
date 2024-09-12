@@ -1,9 +1,9 @@
 import { REST, Routes, Collection } from 'discord.js'
 import 'dotenv/config'
-import { IterateFolder } from './helpers.js'
+import { IterateFolders } from './helpers.js'
 
 
-const commandsCollection = await IterateFolder('commands', '.js', async (file, filePath) => {
+const commandsCollection = await IterateFolders('commands', '.js', async (file, filePath) => {
 	const command = (await import(filePath)).default
 	if ('data' in command && 'execute' in command) {
 		return {key: command.data.name, value: command.data.toJSON()}

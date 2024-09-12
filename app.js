@@ -1,13 +1,13 @@
 import 'dotenv/config'
 import { Client, Events, GatewayIntentBits, Collection } from 'discord.js'
-import { IterateFolder, ResetCooldown } from './helpers.js'
+import { IterateFolder, IterateFolders, ResetCooldown } from './helpers.js'
 import { CronJob } from 'cron'
 
 //Start client
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers] })
 
 //Parse commands from commands folder
-client.commands = await IterateFolder('commands', '.js', async (file, filePath) => {
+client.commands = await IterateFolders('commands', '.js', async (file, filePath) => {
 	const command = (await import(filePath)).default
 	if ('data' in command && 'execute' in command) {
 		return {key: command.data.name, value: command}

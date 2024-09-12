@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, PermissionFlagsBits } from "discord.js"
-import { Config } from "../database/objects.js"
+import { Config } from "../../database/objects.js"
 
 export default {
     data: new SlashCommandBuilder()
