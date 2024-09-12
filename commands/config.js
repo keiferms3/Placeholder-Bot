@@ -29,8 +29,9 @@ async function config(interaction) {
     try {
         const option = interaction.options.getString('option')
         const value = interaction.options.getString('value')
+        //If no option, retrieve entire config
         if (!option) {
-            const config = await Config.getOptions(interaction.guild.id)
+            const config = await Config.getConfig(interaction.guild.id)
             let response = '----- Config -----\n'
             for (const key in config.dataValues) {
                 if (key === 'guildId') continue
@@ -38,8 +39,9 @@ async function config(interaction) {
             }
             return response
         }
+        //If no value, retrieve option's value
         if (!value) {
-            const value = await Config.getOptions(interaction.guild.id, option)
+            const value = await Config.getConfig(interaction.guild.id, option)
             if (value) {
                 return `\`${option}: ${value}\``
             } else {
@@ -47,7 +49,8 @@ async function config(interaction) {
             }
             
         }
-        const update = await Config.updateOption(interaction.guildId, option, value)
+        //If both, update the option to the value
+        const update = await Config.updateConfig(interaction.guildId, option, value)
         if (update[0] !== 0) {
             return `\`${option}\` successfully updated to \`${value}\``
         } else {

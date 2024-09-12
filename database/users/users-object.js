@@ -9,7 +9,8 @@ UsersObj.updateBalance = async function (uid, gid, pointVal) {
         let pointBal = user.points + pointVal
         let pointDifference = pointVal
 
-        const config = await Config.getOptions(gid)
+        const config = await Config.getConfig(gid)
+        //Currently this is the only way maxPoints is enforced anywhere LMAO, TODO later cull balances when updating config
         if (config.maxPoints > -1) {
             if (pointBal > config.maxPoints) {
                 pointDifference -= pointBal - config.maxPoints
@@ -25,13 +26,6 @@ UsersObj.updateBalance = async function (uid, gid, pointVal) {
     }
 }
 
-UsersObj.addUser = async function (uid, gid) {
-    try {
-        return await UsersObj.create({ userId: uid, guildId: gid })
-    } catch (e) {
-        return e
-    }
-}
 
 UsersObj.getBalance = async function (uid, gid) {
     try {
@@ -42,8 +36,17 @@ UsersObj.getBalance = async function (uid, gid) {
     }
 }
 
+UsersObj.addUser = async function (uid, gid) {
+    try {
+        return await UsersObj.create({ userId: uid, guildId: gid })
+    } catch (e) {
+        return e
+    }
+}
+
 UsersObj.getUser = async function (uid = null, gid = null) {
     try {
+        //Return one entry with both IDs, or findall with one ID (all users in a server, or all examples of a user between servers)
         if (uid && gid) {
             return await UsersObj.findOne({ where: { userId: uid, guildId: gid}})
         } else if (gid) {
@@ -61,7 +64,7 @@ UsersObj.getUser = async function (uid = null, gid = null) {
     }
 }
 
-UsersObj.getById = async function (id) {
+UsersObj.getUserById = async function (id) {
     try {
         return await UsersObj.findOne({ where: { id: id}})
     } catch (e) {

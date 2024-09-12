@@ -46,3 +46,25 @@ export async function ResetCooldown(command, client) {
 			}
 		}
 }
+
+//Returns true if the command is on cooldown, and false if the command is free to be used.
+export async function CheckCooldown(command, interaction) {
+    const userId = interaction.user.id
+    const guildId = interaction.guild.id
+    const guildCooldowns = interaction.client.cooldowns.get(command)
+    
+
+    let cooldowns = guildCooldowns.get(guildId)
+    if (!cooldowns) {
+        guildCooldowns.set(guildId, new Collection())
+        cooldowns = guildCooldowns.get(guildId)
+    }
+
+    if (!cooldowns.get(userId)) {
+        cooldowns.set(userId, true)
+        return false
+        
+    } else {
+        return true
+    }
+}

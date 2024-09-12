@@ -10,7 +10,7 @@ ConfigObj.addGuild = async function (guild) {
     }
 }
 
-ConfigObj.updateOption = async function (gid, option, value) {
+ConfigObj.updateConfig = async function (gid, option, value) {
     try {
         return await ConfigObj.update({ [option]: value }, {where: { guildId: gid }})
     } catch (e) {
@@ -18,9 +18,13 @@ ConfigObj.updateOption = async function (gid, option, value) {
     }
 }
 
-ConfigObj.getOptions = async function (gid, option = '') {
+ConfigObj.getConfig = async function (gid, option = '') {
     try {
         const config = await ConfigObj.findOne({ where: { guildId: gid }})
+
+        //If there's no option, send entire object
+        //If there's a valid option, return that value
+        //Returns null when passed an invalid object
         if (option === '') {
             return config
         } else if (Object.hasOwn(config.dataValues, option)) {
