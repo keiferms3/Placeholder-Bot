@@ -7,22 +7,32 @@ export default (database, DataTypes) => {
        },
        dailyPoints: {
            type: DataTypes.INTEGER,
-           defaultValue: 5,
+           defaultValue: 10,
            allowNull: false,
        },
        dailyGifts: {
            type: DataTypes.INTEGER,
-           defaultValue: 10,
+           defaultValue: 15,
            allowNull: false,
+       },
+       maxPoints: {
+        type: DataTypes.INTEGER,
+        defaultValue: -1,
+        allowNull: false,
+       },
+       maxGifts: {
+        type: DataTypes.INTEGER,
+        defaultValue: 100,
+        allowNull: false,
        },
        minorArtifactCost: {
            type: DataTypes.INTEGER,
-           defaultValue: 25,
+           defaultValue: 50,
            allowNull: false,
        },
        majorArtifactCost: {
            type: DataTypes.INTEGER,
-           defaultValue: 50,
+           defaultValue: 200,
            allowNull: false,
        },
    }, {

@@ -18,7 +18,7 @@ ConfigObj.updateOption = async function (gid, option, value) {
     }
 }
 
-ConfigObj.getOption = async function (gid, option = '') {
+ConfigObj.getOptions = async function (gid, option = '') {
     try {
         const config = await ConfigObj.findOne({ where: { guildId: gid }})
         if (option === '') {

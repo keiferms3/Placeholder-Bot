@@ -8,7 +8,7 @@ export default {
     const users = await guild.members.fetch()
 
     for (const user of users) {
-      await Users.createEntry(user[0], guild.id)
+      await Users.addUser(user[0], guild.id)
     }
 
     Config.addGuild(guild)

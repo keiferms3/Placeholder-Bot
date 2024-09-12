@@ -11,7 +11,7 @@
   "scripts": {
     "start": "node app.js",
     "register": "node deploy-commands.js",
-    "deploy-db": "node ./database/database.js -f",
+    "deploy-db": "node ./database/database.js -f -a",
     "dev": "nodemon app.js"
   },
   "dependencies": {

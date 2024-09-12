@@ -21,8 +21,9 @@ export const ArtifactsModel = models.get('artifacts-model.js')
 export const ConfigModel = models.get('config-model.js')
 
 //Sync db
-const force = process.argv.includes('--force') || process.argv.includes('-f');
-sequelize.sync({force}).then(async () => {
+const force = process.argv.includes('--force') || process.argv.includes('-f')
+const alter = process.argv.includes('--alter') || process.argv.includes('-a')
+sequelize.sync({force, alter}).then(async () => {
 	//populate db with data
 	const data = [
 		//UsersModel.upsert({ username: 'Bill', userId: '120939101', guildId: '1232131231' points: 5, gifts: 10 }),
