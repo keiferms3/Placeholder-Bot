@@ -28,14 +28,14 @@ async function pay(interaction) {
         const targetUser = interaction.options.getUser('user')
         const points = interaction.options.getInteger('points')
 
-        const config = Config.getConfig(guild.id)
+        const maxPoints = await Config.getConfig(guild.id, 'maxPoints')
         const Top = await Users.getUser(user.id, guild.id)
         const Bottom = await Users.getUser(targetUser.id, guild.id)
 
         if (Top.points < points) {
             return `You do not have enough points`
         }
-        if (Bottom.points + points > config.maxPoints) {
+        if (maxPoints > -1 && (Bottom.points + points) > maxPoints) {
             return `Recipient cannot take such a large load`
         }
         

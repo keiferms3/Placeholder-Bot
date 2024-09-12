@@ -7,7 +7,7 @@ export default (database, DataTypes) => {
        },
        dailyPoints: {
            type: DataTypes.INTEGER,
-           defaultValue: 10,
+           defaultValue: 20,
            allowNull: false,
        },
        maxPoints: {
