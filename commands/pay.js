@@ -31,7 +31,7 @@ async function balance(interaction) {
         const Top = await Users.getUser(user.id, guild.id)
         const Bottom = await Users.getUser(targetUser.id, guild.id)
 
-        if (Top.points + Top.gifts < points) {
+        if (Top.points < points) {
             return `You do not have enough points`
         }
         

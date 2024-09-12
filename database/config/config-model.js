@@ -10,19 +10,9 @@ export default (database, DataTypes) => {
            defaultValue: 10,
            allowNull: false,
        },
-       dailyGifts: {
-           type: DataTypes.INTEGER,
-           defaultValue: 15,
-           allowNull: false,
-       },
        maxPoints: {
         type: DataTypes.INTEGER,
         defaultValue: -1,
-        allowNull: false,
-       },
-       maxGifts: {
-        type: DataTypes.INTEGER,
-        defaultValue: 100,
         allowNull: false,
        },
        minorArtifactCost: {

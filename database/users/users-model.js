@@ -18,11 +18,6 @@ export default (database, DataTypes) => {
         defaultValue: 0,
         allowNull: false,
     },
-    gifts: {
-        type: DataTypes.INTEGER,
-        defaultValue: 0,
-        allowNull: false,
-    },
 }, {
     timestamps: false,
     indexes: [

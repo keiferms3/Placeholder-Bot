@@ -30,9 +30,9 @@ async function daily(interaction) {
         const cooldowns = guildCooldowns.get(guildId)
         if (!cooldowns.get(userId)) {
             const config = await Config.getOptions(guildId)
-            const points = await Users.updateBalance(userId, guildId, config.dailyPoints, config.dailyGifts)
+            const points = await Users.updateBalance(userId, guildId, config.dailyPoints)
             cooldowns.set(userId, true)
-            return `Daily points redeemed! \`${points.points} Placeholder Points\` and \`${points.gifts} Placeholder Presents\` added to balance`
+            return `Daily points redeemed! \`${points} Placeholder Points\` added to balance`
         } else {
             return 'Daily points on cooldown, resets at <t:1726027200:t>!'
             

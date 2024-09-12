@@ -26,7 +26,7 @@ const alter = process.argv.includes('--alter') || process.argv.includes('-a')
 sequelize.sync({force, alter}).then(async () => {
 	//populate db with data
 	const data = [
-		//UsersModel.upsert({ username: 'Bill', userId: '120939101', guildId: '1232131231' points: 5, gifts: 10 }),
+		//UsersModel.upsert({ username: 'Bill', userId: '120939101', guildId: '1232131231' points: 5 }),
 	]
 	await Promise.all(data)
 	

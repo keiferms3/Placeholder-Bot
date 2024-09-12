@@ -19,10 +19,10 @@ async function balance(interaction) {
     try {
         const user = interaction.options.getUser('user') ?? interaction.user
         const balance = await Users.getBalance(user.id, interaction.guild.id)
-        if (!balance) {
+        if (balance !== 0 && !balance) {
             return `Balance not found for user "${user.globalName}"`
         }
-        return `----- ${user.globalName}'s Balance -----\n:coin:  \`Placeholder Points   | ${balance.points} PP\`  :coin:\n:gift:  \`Placeholder Presents | ${balance.gifts} pp\`  :gift:`
+        return `----- ${user.globalName}'s Balance -----\n:coin:  \`Placeholder Points | ${balance} PP\`  :coin:`
     } catch (e) {
         return e
     }
