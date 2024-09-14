@@ -1,4 +1,5 @@
 import { SlashCommandBuilder, PermissionFlagsBits } from "discord.js"
+import { EventEmitter } from 'node:events'
 import { Config } from "../../database/objects.js"
 
 export default {

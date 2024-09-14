@@ -2,6 +2,7 @@ import 'dotenv/config'
 import { Client, Events, GatewayIntentBits, Collection } from 'discord.js'
 import { IterateFolder, IterateFolders, ResetCooldown } from './helpers.js'
 import { CronJob } from 'cron'
+import { Config } from './database/objects.js'
 
 //Start client
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers] })
@@ -16,10 +17,6 @@ client.commands = await IterateFolders('commands', '.js', async (file, filePath)
 	}
 })
 
-//Setup cooldowns
-client.cooldowns = new Collection()
-client.cooldowns.set('daily', new Collection())
-
 //Event handling
 IterateFolder('events', '.js', async (file, filePath) => {
 	const event = (await import (filePath)).default
@@ -30,14 +27,26 @@ IterateFolder('events', '.js', async (file, filePath) => {
 	}
 })
 
+
 //Startup handler
-client.once(Events.ClientReady, (readyClient) => {
+client.once(Events.ClientReady, async (readyClient) => {
+	//Declare objects 
+	client.cooldowns = new Collection()
+	client.cooldowns.set('daily', new Collection())
+	client.cooldowns.set('weekly', new Collection())
+
 	//Setup cronjobs
 	const daily = new CronJob('00 00 00 * * *', () => {
 		console.log('Reset!!!')
 		ResetCooldown('daily', readyClient)
 	})
 	daily.start()
+
+	const weekly = new CronJob('00 00 00 * * 0', () => {
+		console.log('Weekly Reset!!!')
+		ResetCooldown('weekly', readyClient)
+	})
+	weekly.start()
 
 	//Print ready status
 	console.log(`Online as ${readyClient.user.tag}`)

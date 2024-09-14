@@ -1,5 +1,5 @@
 export default (database, DataTypes) => {
-    return database.define('Artifacts', {
+    return database.define('Trinkets', {
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
@@ -10,6 +10,10 @@ export default (database, DataTypes) => {
             allowNull: false,
             unique: true,
         },
+        type: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
         emoji: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -18,6 +22,10 @@ export default (database, DataTypes) => {
             type: DataTypes.STRING
         },
         owner: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
+        guild: {
             type: DataTypes.STRING,
             allowNull: true,
         },

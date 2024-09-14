@@ -1,11 +1,7 @@
 import { UsersObj } from "./users/users-object.js"
 import { ConfigObj } from "./config/config-object.js"
-//import { Artifacts } from "./config/artifacts-object.js"
+import { TrinketsObj } from "./trinkets/trinkets-object.js"
 
-const Users = UsersObj
-const Config = ConfigObj
-
-export {
-    Users,
-    Config,
-}
+export const Users = UsersObj
+export const Config = ConfigObj
+export const Trinkets = TrinketsObj

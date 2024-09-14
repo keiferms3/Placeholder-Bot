@@ -7,7 +7,6 @@ const sequelize = new Sequelize('database', 'username', 'password', {
 	dialect: 'sqlite',
 	logging: false,
 	storage: 'database.sqlite',
-	omitNull: true,
 })
 
 //Load all models into database and store in collection
@@ -17,7 +16,7 @@ const models = await IterateFolders('database', '-model.js', async (file, fullPa
 
 //Pull out models for exporting
 export const UsersModel = models.get('users-model.js')
-export const ArtifactsModel = models.get('artifacts-model.js')
+export const TrinketsModel = models.get('trinkets-model.js')
 export const ConfigModel = models.get('config-model.js')
 
 //Sync db

@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, Collection } from "discord.js"
+import { SlashCommandBuilder } from "discord.js"
 import { Config, Users } from "../../database/objects.js"
 import { CheckCooldown } from "../../helpers.js"
 
