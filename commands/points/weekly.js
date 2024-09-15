@@ -31,6 +31,7 @@ async function weekly(interaction) {
             
         }
     } catch (e) {
+        console.error(e)
         return e
     }
 }

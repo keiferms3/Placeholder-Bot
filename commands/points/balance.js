@@ -22,8 +22,9 @@ async function balance(interaction) {
         if (balance == undefined) {
             return `Balance not found for user "${user.globalName}"`
         }
-        return `----- ${user.globalName}'s Balance -----\n:coin:  \`Placeholder Points | ${balance} PP\`  :coin:`
+        return `----- ${user.globalName}'s Balance -----\n:coin:  \` Placeholder Points | ${balance} PP \`  :coin:`
     } catch (e) {
+        console.error(e)
         return e
     }
 }

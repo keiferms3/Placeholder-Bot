@@ -31,6 +31,7 @@ async function daily(interaction) {
             
         }
     } catch (e) {
+        console.error(e)
         return e
     }
 }

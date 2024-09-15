@@ -21,11 +21,11 @@ export default (database, DataTypes) => {
         image: {
             type: DataTypes.STRING
         },
-        owner: {
+        ownerId: {
             type: DataTypes.STRING,
             allowNull: true,
         },
-        guild: {
+        guildId: {
             type: DataTypes.STRING,
             allowNull: true,
         },

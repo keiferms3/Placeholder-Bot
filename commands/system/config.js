@@ -59,6 +59,7 @@ async function config(interaction) {
         }
         
     } catch (e) {
+        console.error(e)
         return e
     }
     

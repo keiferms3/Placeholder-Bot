@@ -44,6 +44,7 @@ async function pay(interaction) {
         
         return `\`${user.globalName}\` paid \`${targetUser.globalName}\` \`${points} PP\``
     } catch (e) {
+        console.error(e)
         return e
     }
 }
