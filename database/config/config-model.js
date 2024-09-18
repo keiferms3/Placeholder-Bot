@@ -20,6 +20,11 @@ export default (database, DataTypes) => {
             defaultValue: -1,
             allowNull: false,
         },
+        embedColor: {
+            type: DataTypes.STRING,
+            defaultValue: `#853fb5`,
+            allowNull: false,
+        },
         trinketCostT1: {
             type: DataTypes.INTEGER,
             defaultValue: 0,

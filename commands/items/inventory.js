@@ -1,21 +1,21 @@
-import { SlashCommandBuilder, EmbedBuilder } from "discord.js"
-import { Config, Users } from "../../database/objects.js"
+import { SlashCommandBuilder } from "discord.js"
+import { Users } from "../../database/objects.js"
 
 export default {
     data: new SlashCommandBuilder()
-        .setName('balance')
-        .setDescription('Check someone\'s point balance')
+        .setName('inventory')
+        .setDescription('Check someone\'s inventory')
         .addUserOption((user) => 
             user    
             .setName('user')
             .setDescription('The user who\'s balance you wish to view')),
     async execute(interaction) {
-        const response = await balance(interaction)
+        const response = await inventory(interaction)
         await interaction.reply(response)
     },
 }
 
-async function balance(interaction) {
+async function inventory(interaction) {
     try {
         const user = interaction.options.getUser('user') ?? interaction.user
         const balance = await Users.getBalance(user.id, interaction.guild.id)

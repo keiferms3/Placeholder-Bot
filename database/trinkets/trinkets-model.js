@@ -30,7 +30,7 @@ export default (database, DataTypes) => {
             allowNull: true,
         },
    }, {
-        timestamps: false,
+        timestamps: true,
    })
    }
    

@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "discord.js"
+import { SlashCommandBuilder, EmbedBuilder } from "discord.js"
 import { Config, Users } from "../../database/objects.js"
 import { CheckCooldown } from "../../helpers.js"
 
@@ -21,15 +21,20 @@ export default {
 async function daily(interaction) {
     try {
         const cooldown = await CheckCooldown('daily', interaction)
+        const config = await Config.getConfig(interaction.guild.id)
+        const embed = new EmbedBuilder()
+            .setColor(config.embedColor)
+
         if (!cooldown) {
-            const dailyPoints = await Config.getConfig(interaction.guild.id, 'dailyPoints')
-            await Users.updateBalance(interaction.user.id, interaction.guild.id, dailyPoints)
-            return `Daily points redeemed! \`${dailyPoints} Placeholder Points\` added to balance`
-            
+            await Users.updateBalance(interaction.user.id, interaction.guild.id, config.dailyPoints)
+            embed.setTitle(`:white_check_mark: Daily points redeemed! :white_check_mark:`)
+                 .setDescription(`\`${config.dailyPoints} PP\` added to balance`)
+
         } else {
-            return 'Daily points on cooldown, resets at <t:1726027200:t>!'
-            
+            embed.setTitle(`:x: Daily points on cooldown :x:`)
+                 .setDescription(`Resets at <t:1726027200:t>`)
         }
+        return { embeds: [embed] }
     } catch (e) {
         console.error(e)
         return e

@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "discord.js"
+import { SlashCommandBuilder, EmbedBuilder } from "discord.js"
 import { Config, Users } from "../../database/objects.js"
 
 export default {
@@ -27,22 +27,30 @@ async function pay(interaction) {
         const guild = interaction.guild
         const targetUser = interaction.options.getUser('user')
         const points = interaction.options.getInteger('points')
-
-        const maxPoints = await Config.getConfig(guild.id, 'maxPoints')
+        
+        const config = await Config.getConfig(guild.id)
         const Top = await Users.getUser(user.id, guild.id)
         const Bottom = await Users.getUser(targetUser.id, guild.id)
+        const embed = new EmbedBuilder()
+            .setColor(config.embedColor)
 
         if (Top.points < points) {
-            return `You do not have enough points`
+            embed.setTitle(`:x: You do not have enough points :x:`)
+                 .setDescription(`Cannot pay \`${points} PP\`, \`${user.globalName}\` only has \`${Top.points} PP\``)
+
+        } else if (config.maxPoints > -1 && (Bottom.points + points) > config.maxPoints) {
+            embed.setTitle(`:x: Recipient cannot take such a large load :x:`)
+                 .setDescription(`This transaction would exceed the \`${config.maxPoints} PP\` max limit`)
+
+        } else {
+            Users.updateBalance(user.id, guild.id, (points * -1))
+            Users.updateBalance(targetUser.id, guild.id, points)
+            
+            embed.setTitle(`:white_check_mark: Payment successful! :white_check_mark:`)
+                 .setDescription(`\`${user.globalName}\` paid \`${targetUser.globalName}\` \`${points} PP\``)
         }
-        if (maxPoints > -1 && (Bottom.points + points) > maxPoints) {
-            return `Recipient cannot take such a large load`
-        }
+        return {embeds: [embed]}
         
-        Users.updateBalance(user.id, guild.id, (points * -1))
-        Users.updateBalance(targetUser.id, guild.id, points)
-        
-        return `\`${user.globalName}\` paid \`${targetUser.globalName}\` \`${points} PP\``
     } catch (e) {
         console.error(e)
         return e
