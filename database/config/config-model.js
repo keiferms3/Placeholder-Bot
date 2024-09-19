@@ -25,29 +25,34 @@ export default (database, DataTypes) => {
             defaultValue: `#853fb5`,
             allowNull: false,
         },
-        trinketCostT1: {
-            type: DataTypes.INTEGER,
-            defaultValue: 0,
-            allowNull: false,
-        },
-        trinketCostT2: {
-            type: DataTypes.INTEGER,
-            defaultValue: 200,
-            allowNull: false,
-        },
-        trinketCostT3: {
-            type: DataTypes.INTEGER,
-            defaultValue: 500,
-            allowNull: false,
-        },
-        shopTrinket: {
+        trinketT1Cost: {
             type: DataTypes.INTEGER,
             defaultValue: 50,
             allowNull: false,
         },
-        shopMessage: {
+        trinketT2Cost: {
+            type: DataTypes.INTEGER,
+            defaultValue: 200,
+            allowNull: false,
+        },
+        trinketT3Cost: {
+            type: DataTypes.INTEGER,
+            defaultValue: 500,
+            allowNull: false,
+        },
+        eightBallCost: {
             type: DataTypes.INTEGER,
             defaultValue: 100,
+            allowNull: false,
+        },
+        dialogueCost: {
+            type: DataTypes.INTEGER,
+            defaultValue: 200,
+            allowNull: false,
+        },
+        dialogueReplaceCost: {
+            type: DataTypes.INTEGER,
+            defaultValue: 1000,
             allowNull: false,
         },
    }, {

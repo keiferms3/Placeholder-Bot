@@ -18,16 +18,6 @@ export default (database, DataTypes) => {
         defaultValue: 0,
         allowNull: false,
     },
-    blankTrinkets: {
-        type: DataTypes.INTEGER,
-        defaultValue: 0,
-        allowNull: false,
-    },
-    blankMessages: {
-        type: DataTypes.INTEGER,
-        defaultValue: 0,
-        allowNull: false,
-    },
 }, {
     timestamps: false,
     indexes: [
