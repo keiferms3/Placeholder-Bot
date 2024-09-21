@@ -5,13 +5,12 @@ export default (database, DataTypes) => {
             primaryKey: true,
             autoIncrement: true,
         },
+        tier: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
         name: {
             type: DataTypes.STRING,
-            allowNull: false,
-            unique: true,
-        },
-        type: {
-            type: DataTypes.INTEGER,
             allowNull: false,
         },
         emoji: {
@@ -19,15 +18,24 @@ export default (database, DataTypes) => {
             allowNull: false,
         },
         image: {
-            type: DataTypes.STRING
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
+        description: {
+            type: DataTypes.STRING,
+            allowNull: true,
         },
         ownerId: {
             type: DataTypes.STRING,
             allowNull: true,
         },
+        creatorId: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
         guildId: {
             type: DataTypes.STRING,
-            allowNull: true,
+            allowNull: false,
         },
    }, {
         timestamps: true,

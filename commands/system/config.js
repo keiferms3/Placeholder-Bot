@@ -26,6 +26,7 @@ export default {
     },
 }
 
+//Update to use embeds and look good later, add subcommands to fix permissions too
 async function config(interaction) {
     try {
         const option = interaction.options.getString('option')

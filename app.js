@@ -2,7 +2,6 @@ import 'dotenv/config'
 import { Client, Events, GatewayIntentBits, Collection } from 'discord.js'
 import { IterateFolder, IterateFolders, ResetCooldown } from './helpers.js'
 import { CronJob } from 'cron'
-import { Config } from './database/objects.js'
 
 //Start client
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers] })

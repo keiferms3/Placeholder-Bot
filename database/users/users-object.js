@@ -22,6 +22,7 @@ UsersObj.updateBalance = async function (uid, gid, pointVal) {
         return pointDifference
         
     } catch (e) {
+        console.error(e)
         return e
     }
 }

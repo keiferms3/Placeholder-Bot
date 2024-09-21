@@ -4,7 +4,7 @@ const ConfigObj = ConfigModel
 
 ConfigObj.addGuild = async function (guild) {
     try {
-        return await ConfigObj.create({ guildId: guild.id })
+        return await ConfigObj.create({ guildId: guild.id }) //Every other column has a default value
     } catch (e) {
         return e
     }

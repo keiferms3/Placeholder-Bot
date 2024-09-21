@@ -15,7 +15,7 @@ export default (database, DataTypes) => {
             defaultValue: 100,
             allowNull: false,
         },
-        maxPoints: {
+        maxPoints: { // Negative number for no max
             type: DataTypes.INTEGER,
             defaultValue: -1,
             allowNull: false,

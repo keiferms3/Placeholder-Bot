@@ -17,7 +17,6 @@ async function shop(interaction) {
         const embed = new EmbedBuilder()
             .setColor(config.embedColor)
             .setTitle('💰 Shop List 💰')
-            .setDescription('')
             .addFields({
                 name: '🏆 Trinkets 🏆',
                 value: `\`Create T1\` \`${config.trinketT1Cost} PP\`\n\`Create T2\` \`${config.trinketT2Cost} PP\`\n\`Create T3\` \`${config.trinketT3Cost} PP\``,

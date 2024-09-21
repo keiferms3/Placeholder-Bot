@@ -43,8 +43,8 @@ async function pay(interaction) {
                  .setDescription(`This transaction would exceed the \`${config.maxPoints} PP\` max limit`)
 
         } else {
-            Users.updateBalance(user.id, guild.id, (points * -1))
-            Users.updateBalance(targetUser.id, guild.id, points)
+            Users.updateBalance(Top.userId, Top.guildId, (points * -1))
+            Users.updateBalance(Bottom.userId, Bottom.guildId, points)
             
             embed.setTitle(`:white_check_mark: Payment successful! :white_check_mark:`)
                  .setDescription(`\`${user.globalName}\` paid \`${targetUser.globalName}\` \`${points} PP\``)
