@@ -15,8 +15,22 @@ TrinketsObj.addTrinket = async function (tier, name, emoji, image, description, 
 }
 
 //Retrieve trinket(s) by IDs provided
-TrinketsObj.getTrinket = async function (id = null, ownerId = null, creatorId = null, groupId = null) {
-
+TrinketsObj.getTrinkets = async function (id = undefined, ownerId = undefined, creatorId = undefined, guildId = undefined) {
+    try {
+        if (id) {
+            return await TrinketsObj.findOne({ where: {id: id}})
+        } else if (ownerId) {
+            return await TrinketsObj.findAll({ where: {ownerId: ownerId} })
+        } else if (creatorId) {
+            return await TrinketsObj.findAll({ where: {creatorId: creatorId} })
+        } else if (guildId) {
+            return await TrinketsObj.findAll({ where: {guildId: guildId} })
+        }
+        
+    } catch (e) {
+        console.error(e)
+        return e
+    }
 }
 
 export { TrinketsObj }

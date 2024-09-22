@@ -36,7 +36,7 @@ async function pay(interaction) {
 
         if (Top.points < points) {
             embed.setTitle(`:x: You do not have enough points :x:`)
-                 .setDescription(`Cannot pay \`${points} PP\`, \`${user.globalName}\` only has \`${Top.points} PP\``)
+                 .setDescription(`Cannot pay \`${points} PP\`, \`${user.displayName}\` only has \`${Top.points} PP\``)
 
         } else if (config.maxPoints > -1 && (Bottom.points + points) > config.maxPoints) {
             embed.setTitle(`:x: Recipient cannot take such a large load :x:`)
@@ -47,7 +47,7 @@ async function pay(interaction) {
             Users.updateBalance(Bottom.userId, Bottom.guildId, points)
             
             embed.setTitle(`:white_check_mark: Payment successful! :white_check_mark:`)
-                 .setDescription(`\`${user.globalName}\` paid \`${targetUser.globalName}\` \`${points} PP\``)
+                 .setDescription(`\`${user.displayName}\` paid \`${targetUser.displayName}\` \`${points} PP\``)
         }
         return {embeds: [embed]}
         

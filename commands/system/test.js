@@ -5,6 +5,11 @@ export default {
         .setName('test')
         .setDescription('Tests a basic command!'),
     async execute(interaction) {
-        await interaction.reply(`What's up ${interaction.user.globalName}`)
+        const response = await test(interaction)
+        await interaction.reply(response)
     },
+}
+
+async function test(interaction) {
+    return `What's up ${interaction.user.displayName}`
 }

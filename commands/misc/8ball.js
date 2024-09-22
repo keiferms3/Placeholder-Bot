@@ -5,6 +5,6 @@ export default {
         .setName('8ball')
         .setDescription('Tests a basic command!'),
     async execute(interaction) {
-        await interaction.reply(`What's up ${interaction.user.globalName}`)
+        await interaction.reply(`What's up ${interaction.user.displayName}`)
     },
 }

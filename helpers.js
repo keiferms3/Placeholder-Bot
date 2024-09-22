@@ -68,3 +68,12 @@ export async function CheckCooldown(command, interaction) {
         return true
     }
 }
+
+export function random(min = 0, max) {
+    min -= 1
+    return Math.ceil(Math.random() * (max - min) + min)
+}
+
+export async function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms))
+}

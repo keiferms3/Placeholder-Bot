@@ -29,24 +29,28 @@ export default {
                 .setName('name')
                 .setDescription('The trinket\'s name, 64 character limit')
                 .setRequired(true)
+                .setMaxLength(64)
             ))
             .addStringOption((string) => (
                 string
                 .setName('emoji')
                 .setDescription('The trinket\'s emoji icon, must be from this server and non-animated')
                 .setRequired(true)
+                .setMaxLength(64)
             ))
             .addStringOption((string) => (
                 string
                 .setName('image')
                 .setDescription('URL of the trinket\'s image, 512 character limit')
                 .setRequired(false)
+                .setMaxLength(512)
             ))
             .addStringOption((string) => (
                 string
                 .setName('lore')
-                .setDescription('The trinket\'s item description, 1024 character limit')
+                .setDescription('The trinket\'s item description, 1200 character limit')
                 .setRequired(false)
+                .setMaxLength(1200)
             ))
         )),
     async execute(interaction) {
@@ -80,7 +84,7 @@ async function create(interaction, config) {
     const name = interaction.options.getString('name')
     const emoji = interaction.options.getString('emoji')
     const image = interaction.options.getString('image')
-    const lore = interaction.options.getString('lore')
+    const lore = interaction.options.getString('description')
     const embed = new EmbedBuilder()
         .setColor(config.embedColor)
         .setTitle(`:x: Failed to create trinket :x:`)
@@ -95,9 +99,9 @@ async function create(interaction, config) {
         return embed.setDescription(`Name has a character limit of 64. Your name was ${name.length} characters long`)
     } else if (emoji.length > 64) { //Custom emojis should never be longer than 56 characters and this felt right
         return embed.setDescription(`Emoji has a character limit of 64. Your "emoji" was ${emoji.length} characters long`)
-    } else if (lore.length > 1024) { //Due to 2000 char message limit
-        return embed.setDescription(`Description has a character limit of 1024. Your description was ${lore.length} characters long`)
-    } else if (image.length > 512) { //1664 characters max user input, so we should never hit the 2000 limit if this info ever gets sent as a raw message
+    } else if (lore && lore.length > 1200) { //Due to 2000 char message limit
+        return embed.setDescription(`Description has a character limit of 1200. Your description was ${lore.length} characters long`)
+    } else if (image && image.length > 512) { //1840 characters max user input, so we should never hit the 2000 limit if this info ever gets sent as a raw message
         return embed.setDescription(`Image URL has a character limit of 512. Your URL was ${image.length} characters long`)
     }
 

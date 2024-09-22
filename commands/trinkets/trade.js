@@ -5,6 +5,6 @@ export default {
         .setName('trade')
         .setDescription('View the shop! Use /buy to '),
     async execute(interaction) {
-        await interaction.reply(`What's up ${interaction.user.globalName}`)
+        await interaction.reply(`What's up ${interaction.user.displayName}`)
     },
 }

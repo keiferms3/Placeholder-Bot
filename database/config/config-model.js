@@ -55,6 +55,31 @@ export default (database, DataTypes) => {
             defaultValue: 1000,
             allowNull: false,
         },
+        gachaRollCost: {
+            type: DataTypes.INTEGER,
+            defaultValue: 20,
+            allowNull: false,
+        },
+        gachaT0Chance: { //Gacha chances must sum to 100. If under, T3 will increase. If over, higher chances may be impossible.
+            type: DataTypes.INTEGER,
+            defaultValue: 30,
+            allowNull: false,
+        },
+        gachaT1Chance: {
+            type: DataTypes.INTEGER,
+            defaultValue: 50,
+            allowNull: false,
+        },
+        gachaT2Chance: {
+            type: DataTypes.INTEGER,
+            defaultValue: 15,
+            allowNull: false,
+        },
+        gachaT3Chance: {
+            type: DataTypes.INTEGER,
+            defaultValue: 5,
+            allowNull: false,
+        },
    }, {
        timestamps: false,
    })

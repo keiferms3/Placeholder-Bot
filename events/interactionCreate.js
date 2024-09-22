@@ -1,4 +1,5 @@
 import { Events, TextInputBuilder, ActionRowBuilder, ModalBuilder, TextInputStyle } from 'discord.js'
+import { rollGacha } from '../commands/trinkets/gacha.js'
 
 export default {
   name: Events.InteractionCreate,
@@ -24,49 +25,29 @@ export default {
 		}
 	}
 
-	//Select Menu Submission
-	else if (interaction.isStringSelectMenu()) {
-		const name = interaction.customId
-
-		//Trinket Creation Selection Menu
-		// if (name === 'trinketTier') {
-		// 	console.log(interaction.values[0])
-
-		// 	const modal = new ModalBuilder()
-		// 		.setCustomId(`trinketCreateT${interaction.values[0]}`)
-		// 		.setTitle('Create Trinket')
-		// 		.addComponents(
-		// 			new ActionRowBuilder().addComponents(
-		// 				new TextInputBuilder()
-		// 				.setCustomId('trinketName')
-		// 				.setLabel('Trinket Name')
-		// 				.setStyle(TextInputStyle.Short)
-		// 			),
-		// 			new ActionRowBuilder().addComponents(
-		// 				new TextInputBuilder()
-		// 				.setCustomId('trinketEmoji')
-		// 				.setLabel('Trinket Emoji')
-		// 				.setStyle(TextInputStyle.Short)
-		// 			)
-		// 		)
-		// 	await interaction.showModal(modal)
-		// }
+	//Button presses
+	else if (interaction.isButton()) {
+		const button = interaction.customId
+		
+		//On gacha roll
+		if (button === 'gachaRoll') {
+			await rollGacha(interaction)
+		}
 	}
+
+	//Select Menu Submission
+	// else if (interaction.isStringSelectMenu()) {
+	// 	const name = interaction.customId
+	// }
 
 	//Modal Submission
-	else if (interaction.isModalSubmit()) {
-		const name = interaction.customId
-		console.log(name)
-		console.log(interaction)
-
-		//Trinket Creation Modals
-		// if (name === 'trinketCreateT1' || name === 'trinketCreateT2' || name === 'trinketCreateT3') {
-		// 	console.log('trinket!')
-		// }
-	}
+	// else if (interaction.isModalSubmit()) {
+	// 	const name = interaction.customId
+	// }
 	
 	else { 
-		console.log(interaction)
+		//console.log(interaction)
+		console.log('wuh')
 		return 
 	}
 	

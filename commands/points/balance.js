@@ -22,11 +22,11 @@ async function balance(interaction) {
         const embedColor = await Config.getConfig(interaction.guild.id, 'embedColor')
         //Get trinket count here as well
         if (balance == undefined) {
-            return `Balance not found for user "${user.globalName}"`
+            return `Balance not found for user "${user.displayName}"`
         }
         const embed = new EmbedBuilder()
             .setColor(embedColor)
-            .setTitle(`${user.globalName}'s Balance`)
+            .setTitle(`${user.displayName}'s Balance`)
             .setDescription(`:coin:  \`Placeholder Points\` | \`${balance} PP\`  :coin:\n:trophy:  \`Total Trinkets\` |  \`${0} T1\` \`${2} T2\` \`${1} T3\`  :trophy:`)
         
         return {embeds: [embed]}
