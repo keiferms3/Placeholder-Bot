@@ -63,7 +63,6 @@ export async function rollGacha(interaction) {
     //Each chance value is equal to 100 minus the chance of rolling that tier or higher
     const chances = [ 100 - (gachaChances.get(1) + gachaChances.get(2) + gachaChances.get(3)),  100 - (gachaChances.get(2) + gachaChances.get(3)), 100 - gachaChances.get(3)]
     const result = random(1, 100)
-    console.log(chances, result)
 
     var trinket
     const selectTrinket = async (tier) => {
