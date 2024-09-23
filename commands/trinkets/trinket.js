@@ -15,7 +15,7 @@ export default {
             .setDescription('View a specific trinket by ID')
             .addIntegerOption((int) => (
                 int
-                .setName('ID')
+                .setName('id')
                 .setDescription('Trinket\'s unique ID number')
                 .setRequired(true)
             ))
@@ -74,7 +74,7 @@ export default {
             ))
             .addStringOption((string) => (
                 string
-                .setName('lore')
+                .setName('description')
                 .setDescription('The trinket\'s item description, 1200 character limit')
                 .setRequired(false)
                 .setMaxLength(1200)
@@ -97,13 +97,17 @@ async function trinket(interaction) {
     const command = interaction.options.getSubcommand()
     if (command === 'create') {
         var response = await create(interaction, config)
-    } else if (command === 'roll') {
-        var response = displayGacha(interaction)
-    } else if (command === 'view') {
-        var response = view(interaction, config)
-    } else if (command === 'search') {
-        var response = search(interaction, config)
-    } else {
+    } 
+    else if (command === 'roll') {
+        var response = await displayGacha(interaction)
+    } 
+    else if (command === 'view') {
+        var response = await view(interaction, config)
+    } 
+    else if (command === 'search') {
+        var response = await search(interaction, config)
+    } 
+    else {
         return `Command "\`${command}\`" not found`
     }
 
@@ -141,19 +145,22 @@ async function create(interaction, config) {
     const user = await Users.getUser(interaction.user.id, guildId)
     if (tier === 1) {
         if (user.points < config.trinketT1Cost) {
-            return embed.setDescription(`${config.rarityNameT1} trinkets require \`${config.trinketT1Cost} PP\`, you have \`${user.points} PP\``)
+            embed.setDescription(`${config.rarityNameT1} trinkets require \`${config.trinketT1Cost} PP\`, you have \`${user.points} PP\``)
+            return {embeds: [embed]}
         }
         await Users.updateBalance(user.userId, user.guildId, -1*config.trinketT1Cost)
     }
     else if (tier === 2) {
         if (user.points < config.trinketT2Cost) {
-            return embed.setDescription(`${config.rarityNameT2} trinkets require \`${config.trinketT2Cost} PP\`, you have \`${user.points} PP\``)
+            embed.setDescription(`${config.rarityNameT2} trinkets require \`${config.trinketT2Cost} PP\`, you have \`${user.points} PP\``)
+            return {embeds: [embed]}
         }
         await Users.updateBalance(user.userId, user.guildId, -1*config.trinketT2Cost)
     }
     else if (tier === 3) {
         if (user.points < config.trinketT3Cost) {
-            return embed.setDescription(`${config.rarityNameT3} trinkets require \`${config.trinketT3Cost} PP\`, you have \`${user.points} PP\``)
+            embed.setDescription(`${config.rarityNameT3} trinkets require \`${config.trinketT3Cost} PP\`, you have \`${user.points} PP\``)
+            return {embeds: [embed]}
         }
         await Users.updateBalance(user.userId, user.guildId, -1*config.trinketT3Cost)
     }
@@ -161,21 +168,45 @@ async function create(interaction, config) {
     await Trinkets.addTrinket(tier, name, emoji, image, lore, user.userId, guildId, interaction)
     UpdateGachaChance(tier, 1, interaction)
 
-    embed.setTitle(`:white_check_mark: ${config[`rarityNameT${tier}`]} trinket ${emoji}\`${name}\` successfully created! :white_check_mark:`)
-         .setDescription(`Trinket has been added to the tier ${tier} gacha`)
+    embed.setTitle(`${config[`rarityNameT${tier}`]} trinket ${emoji}\`${name}\` successfully created!`)
+         .setDescription(lore)
+         .setImage(image)
     return {embeds: [embed]}
 }
 
 async function view(interaction, config) {
-    
+    const guildId = interaction.guild.id
+    const id = interaction.options.getInteger('id')
+
+    let embed
+    const trinket = await Trinkets.getTrinkets(id)
+    if (trinket) {
+        embed = display(trinket, interaction, config)
+    } else {
+        embed = new EmbedBuilder().setTitle('oops')
+    }
+    return {embeds: [embed]}
 }
 
 async function search(interaction, config) {
-
+    
 }
 
-async function display(interaction, config) {
+function display(trinket, interaction, config) {
+    const rarity = config[`rarityNameT${trinket.tier}`]
+    const owner = trinket.ownerId.includes('gacha') ? '*The Gacha*' : interaction.client.users.cache.get(trinket.ownerId)
+    const creator = interaction.client.users.cache.get(trinket.creatorId) ?? 'Unknown'
+    const createdAt = `<t:${Date.parse(trinket.createdAt) / 1000}:f>`
+    const updatedAt = `<t:${Date.parse(trinket.updatedAt) / 1000}:f>`
+    
 
+    const embed = new EmbedBuilder()
+        .setColor(config.embedColor)
+        .setTitle(`${rarity} ${trinket.emoji} \`${trinket.name}\``)
+        .setDescription(`ID: \`${trinket.id}\`\nOwned By: ${owner} since ${updatedAt}\nCreated By: ${creator} on ${createdAt}\n\n${trinket.description}`)
+        .setImage(trinket.image)
+
+    return embed
 }
 
 async function checkImageUrl(url) {
