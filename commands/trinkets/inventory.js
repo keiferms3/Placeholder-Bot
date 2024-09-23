@@ -34,14 +34,14 @@ async function inventory(interaction) {
         if (tier3.length > 0) {
             desc += `:first_place: **${config.rarityNameT3}** :first_place:\n`
             for (const trinket of tier3) {
-                desc += `${trinket.emoji}\`${trinket.name}\` \`ID ${trinket.id}\`\n`
+                desc += `${trinket.emoji}***\`${trinket.name}\`*** \`ID ${trinket.id}\`\n`
             }
         }
         desc += '\n'
         if (tier2.length > 0) {
             desc += `:second_place: **${config.rarityNameT2}** :second_place:\n`
             for (const trinket of tier2) {
-                desc += `${trinket.emoji}\`${trinket.name}\` \`ID ${trinket.id}\`\n`
+                desc += `${trinket.emoji}**\`${trinket.name}\`** \`ID ${trinket.id}\`\n`
             }
         }
         desc += '\n'

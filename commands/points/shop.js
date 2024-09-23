@@ -19,11 +19,13 @@ async function shop(interaction) {
             .setTitle('💰 Shop List 💰')
             .addFields({
                 name: '🏆 Trinkets 🏆',
-                value: `\`Create T1\` \`${config.trinketT1Cost} PP\`\n\`Create T2\` \`${config.trinketT2Cost} PP\`\n\`Create T3\` \`${config.trinketT3Cost} PP\``,
-              }, {
-                name: '✉️ Messages ✉️',
-                value: `\`Add to 8 Ball\` \`100 PP\`\n\`Randomly send on command\` \`200 PP\`\n\`Randomly replace command\` \`1000 PP\``,
-              })
+                value: `\`Create ${config.rarityNameT1}\` | \`${config.trinketT1Cost} PP\`\n\`Create ${config.rarityNameT2}\` | \`${config.trinketT2Cost} PP\`\n\`Create ${config.rarityNameT3}\` | \`${config.trinketT3Cost} PP\``,
+              }, 
+            //   {
+            //     name: '✉️ Messages ✉️',
+            //     value: `\`Add to 8 Ball\` \`100 PP\`\n\`Randomly send on command\` \`200 PP\`\n\`Randomly replace command\` \`1000 PP\``,
+            //   }
+            )
 
         return { embeds: [embed] }
     } catch (e) {

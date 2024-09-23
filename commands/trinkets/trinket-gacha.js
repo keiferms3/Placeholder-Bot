@@ -120,9 +120,9 @@ export async function viewGacha(interaction) {
     let tier3 = `:first_place: **${config.rarityNameT3} Trinkets** :first_place:\n`
 
     //List trinkets of each rarity
-    for (const trinket of trinkets.filter(t => t.ownerId === 'gacha1')) { tier1 = tier1 + `${trinket.emoji}\`${trinket.name}\` \`${trinket.id}\`**,** `}
-    for (const trinket of trinkets.filter(t => t.ownerId === 'gacha2')) { tier2 = tier2 + `${trinket.emoji}\`${trinket.name}\` \`${trinket.id}\`**,** `}
-    for (const trinket of trinkets.filter(t => t.ownerId === 'gacha3')) { tier3 = tier3 + `${trinket.emoji}\`${trinket.name}\` \`${trinket.id}\`**,** `}
+    for (const trinket of trinkets.filter(t => t.ownerId === 'gacha1')) { tier1 = tier1 + `${trinket.emoji}\`${trinket.name}\` \`#${trinket.id}\`**,** `}
+    for (const trinket of trinkets.filter(t => t.ownerId === 'gacha2')) { tier2 = tier2 + `${trinket.emoji}**\`${trinket.name}\`** \`#${trinket.id}\`**,** `}
+    for (const trinket of trinkets.filter(t => t.ownerId === 'gacha3')) { tier3 = tier3 + `${trinket.emoji}***\`${trinket.name}\`*** \`#${trinket.id}\`**,** `}
 
     //If there are no trinkets of rarity, list "NOTHING". Otherwise, remove the last comma in the list
     if (tier1 === `:third_place: **${config.rarityNameT1} Trinkets** :third_place:\n`) { tier1 = tier1 + '`NOTHING!`'}
