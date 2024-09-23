@@ -14,7 +14,7 @@ export async function displayGacha(interaction) {
         .addComponents(
             new ButtonBuilder()
                 .setCustomId('gachaRoll')
-                .setLabel(`Pull!`)
+                .setLabel(`Roll!`)
                 .setEmoji(`🎲`)
                 .setStyle(ButtonStyle.Success),
             new ButtonBuilder()
@@ -115,14 +115,17 @@ export async function viewGacha(interaction) {
     const chances = interaction.client.gachaChances.get(interaction.guild.id)
     const trinkets = await Trinkets.getTrinkets(undefined, interaction.guild.id)
 
+    //If these strings are ever changed, copy and paste them below as well
     let tier1 = `:third_place: **${config.rarityNameT1} Trinkets** :third_place:\n`
     let tier2 = `:second_place: **${config.rarityNameT2} Trinkets** :second_place:\n`
     let tier3 = `:first_place: **${config.rarityNameT3} Trinkets** :first_place:\n`
 
+    //List trinkets of each rarity
     for (const trinket of trinkets.filter(t => t.ownerId === 'gacha1')) { tier1 = tier1 + `${trinket.emoji}\`${trinket.name}\` \`${trinket.id}\`**,** `}
     for (const trinket of trinkets.filter(t => t.ownerId === 'gacha2')) { tier2 = tier2 + `${trinket.emoji}\`${trinket.name}\` \`${trinket.id}\`**,** `}
-    for (const trinket of trinkets.filter(t => t.ownerId === 'gacha3')) { tier3 = tier3 + `${trinket.emoji}\`${trinket.name}\`**,** `}
+    for (const trinket of trinkets.filter(t => t.ownerId === 'gacha3')) { tier3 = tier3 + `${trinket.emoji}\`${trinket.name}\` \`${trinket.id}\`**,** `}
 
+    //If there are no trinkets of rarity, list "NOTHING". Otherwise, remove the last comma in the list
     if (tier1 === `:third_place: **${config.rarityNameT1} Trinkets** :third_place:\n`) { tier1 = tier1 + '`NOTHING!`'}
     else { tier1 = tier1.substring(0, tier1.lastIndexOf('**,**')) }
     if (tier2 === `:second_place: **${config.rarityNameT2} Trinkets** :second_place:\n`) { tier2 = tier2 + '`NOTHING!`'}
@@ -133,7 +136,7 @@ export async function viewGacha(interaction) {
     let description = `${config.rarityNameT1} Chance: \`${chances.get(1)}%\`\n${config.rarityNameT2} Chance: \`${chances.get(2)}%\`\n${config.rarityNameT3} Chance: \`${chances.get(3)}%\`\n\n${tier3}\n\n${tier2}\n\n${tier1}`
     let embed = new EmbedBuilder()
             .setColor(config.embedColor)
-            .setTitle(`:mag_right: Gacha Information :mag:`)
+            .setTitle(`:mag_right: Trinket Roll Information :mag:`)
             .setDescription(description)
     await interaction.reply({embeds: [embed]})
 }
