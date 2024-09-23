@@ -169,7 +169,7 @@ async function create(interaction, config) {
     UpdateGachaChance(tier, 1, interaction)
 
     embed.setTitle(`${config[`rarityNameT${tier}`]} trinket ${emoji}\`${name}\` successfully created!`)
-         .setDescription(lore ?? '')
+         .setDescription(lore)
          .setImage(image)
     return {embeds: [embed]}
 }
