@@ -1,6 +1,6 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, SlashCommandBuilder } from "discord.js"
 import { Config, Trinkets, Users } from "../../database/objects.js"
-import { random, sleep } from "../../helpers.js"
+import { random, sleep, UpdateGachaChance } from "../../helpers.js"
 
 export default {
     data: new SlashCommandBuilder()
@@ -22,8 +22,8 @@ async function displayGacha(interaction) {
     const user = await Users.getUser(interaction.user.id, interaction.guild.id)
     const embed = new EmbedBuilder()
         .setColor(config.embedColor)
-        .setTitle(`:admissions_ticket: GAMBLING !!! :admissions_ticket:`)
-        .setDescription(`Press button to roll for ${config.gachaRollCost}`)
+        .setTitle(`:tickets: GAMBLING !!! :tickets:`)
+        .setDescription(`Press button to roll for \`${config.gachaRollCost} PP\``)
     
     const buttonRow = new ActionRowBuilder()
         .addComponents(
@@ -31,15 +31,13 @@ async function displayGacha(interaction) {
                 .setCustomId('gachaRoll')
                 .setLabel(`Pull!`)
                 .setEmoji(`🎲`)
-                .setStyle(ButtonStyle.Success)
+                .setStyle(ButtonStyle.Success),
+            new ButtonBuilder()
+                .setCustomId('gachaView')
+                .setLabel(`View Info`)
+                .setEmoji(`🔎`)
+                .setStyle(ButtonStyle.Secondary)
         )
-
-    //0 = 0, 1 = 0+1, 2 = 0+1+2, 3 = 0+1+2+3
-    
-
-    // for (let i = 0; i < 1; i++) {
-        
-    // }
 
     return {embeds: [embed], components: [buttonRow]}
 }
@@ -48,25 +46,26 @@ export async function rollGacha(interaction) {
     const config = await Config.getConfig(interaction.guild.id)
     const user = await Users.getUser(interaction.user.id, interaction.guild.id)
     
-    let dots = '..'
     let embed = new EmbedBuilder()
             .setColor(config.embedColor)
-            .setTitle(`Rolling${dots}`)
-    await interaction.reply({embeds: [embed]})
+            .setTitle(`:game_die: ${interaction.user.displayName} is rolling`)
 
     //Confirm eligability and deduct points
     if (user.points < config.gachaRollCost) {
         embed.setTitle(`:x: Roll failed :x:`)
              .setDescription(`Not enough points. Roll requires \`${config.gachaRollCost} PP\`, you have \`${user.points} PP\``)
-             await interaction.editReply({embeds: [embed]})
+             await interaction.reply({embeds: [embed]})
+        return
     }
     Users.updateBalance(user.userId, user.guildId, -1*config.gachaRollCost)
+    await interaction.reply({embeds: [embed]})
 
-    //Start async cosmetic rolling
+    //Start async cosmetic rolling, WIP, maybe replace with available trinket icons cycling?
+    let dots = ''
     const animate = async () => {
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 4; i++) {
             dots += '.'
-            embed.setTitle(`${interaction.user.displayName} is rolling${dots}`)
+            embed.setTitle(`:game_die: ${interaction.user.displayName} is rolling${dots}`)
             await interaction.editReply({embeds: [embed]})
             await sleep(200)
         }
@@ -75,13 +74,16 @@ export async function rollGacha(interaction) {
     const animationDone = animate()
 
     //Roll
-    const chances = [ config.gachaT0Chance, config.gachaT0Chance + config.gachaT1Chance, config.gachaT0Chance + config.gachaT1Chance + config.gachaT2Chance, config.gachaT0Chance + config.gachaT1Chance + config.gachaT2Chance + config.gachaT3Chance, ]
-    const result = random(1, chances[3])
+    const gachaChances = interaction.client.gachaChances.get(interaction.guild.id)
+    //Each chance value is equal to 100 minus the chance of rolling that tier or higher
+    const chances = [ 100 - (gachaChances.get(1) + gachaChances.get(2) + gachaChances.get(3)),  100 - (gachaChances.get(2) + gachaChances.get(3)), 100 - gachaChances.get(3)]
+    const result = random(1, 100)
+    console.log(chances, result)
 
     var trinket
     const selectTrinket = async (tier) => {
         if (tier <= 0) { return undefined }
-        const trinkets = await Trinkets.getTrinkets(undefined, `gacha${tier}`)
+        const trinkets = await Trinkets.getTrinkets(undefined, user.guildId, `gacha${tier}`)
         const length = trinkets.length
         if (length <= 0) {
             return await selectTrinket(tier - 1)
@@ -92,12 +94,12 @@ export async function rollGacha(interaction) {
     }
     if (result <= chances[0]) {
         trinket = null
-    } else if (result <= chances[1]) {
-        trinket = await selectTrinket(1)
-    } else if (result <= chances[2]) {
-        trinket = await selectTrinket(2)
-    } else if (result <= chances[3]) {
+    } else if (result > chances[2]) {
         trinket = await selectTrinket(3)
+    } else if (result > chances[1]) {
+        trinket = await selectTrinket(2)
+    } else if (result > chances[0]) {
+        trinket = await selectTrinket(1)
     }
     
     //Wait for animation to finish
@@ -105,7 +107,7 @@ export async function rollGacha(interaction) {
 
     //Handle result
     if (trinket === null) {
-        embed.setTitle(`Roll failed :( Better luck next time`)
+        embed.setTitle(`:x: ${interaction.user.displayName} got NOTHING!! :x:`)
     } else if (trinket === undefined) {
         embed.setTitle(`There are no trinkets left in the gacha!`)
              .setDescription(`Roll has been refunded`)
@@ -113,12 +115,31 @@ export async function rollGacha(interaction) {
     } else {
         trinket.ownerId = user.userId
         await trinket.save()
+        await UpdateGachaChance(trinket.tier, -1, interaction)
 
-        embed.setTitle(`SUCCESS! You got a tier ${trinket.tier} \`${trinket.emoji} ${trinket.name}\``)
-             .setDescription(trinket.description)
+        embed.setTitle(`:white_check_mark: ${interaction.user.displayName} got the Tier ${trinket.tier} trinket \`${trinket.emoji} ${trinket.name}\` \`(ID ${trinket.id})\` :white_check_mark: `)
+             .setDescription(`Created by ${trinket.creatorId} on <t:${Date.parse(trinket.createdAt) / 1000}:f>`)
              .setImage(trinket.image)
     }
     
     await interaction.editReply({embeds: [embed]})
 }
 
+export async function viewGacha(interaction) {
+    const config = await Config.getConfig(interaction.guild.id)
+    const chances = interaction.client.gachaChances.get(interaction.guild.id)
+    const trinkets = await Trinkets.getTrinkets(undefined, interaction.guild.id)
+    let tier1 = `:third_place: Tier 1 Trinkets :third_place:\n`
+    let tier2 = `:second_place: Tier 2 Trinkets :second_place:\n`
+    let tier3 = `:first_place: Tier 3 Trinkets :first_place:\n`
+    for (const trinket of trinkets.filter(t => t.ownerId === 'gacha1')) { tier1 = tier1 + `${trinket.emoji}\`${trinket.name}\`**,** `}
+    for (const trinket of trinkets.filter(t => t.ownerId === 'gacha2')) { tier2 = tier2 + `${trinket.emoji}\`${trinket.name}\`**,** `}
+    for (const trinket of trinkets.filter(t => t.ownerId === 'gacha3')) { tier3 = tier3 + `${trinket.emoji}\`${trinket.name}\`**,** `}
+
+    let description = `Tier 1 Chance: \`${chances.get(1)}%\`\nTier 2 Chance: \`${chances.get(2)}%\`\nTier 3 Chance: \`${chances.get(3)}%\`\n\n${tier1}\n${tier2}\n${tier3}`
+    let embed = new EmbedBuilder()
+            .setColor(config.embedColor)
+            .setTitle(`:mag_right: Gacha Information :mag:`)
+            .setDescription(description)
+    await interaction.reply({embeds: [embed]})
+}

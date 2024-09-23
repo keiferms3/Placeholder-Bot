@@ -1,6 +1,6 @@
 import 'dotenv/config'
 import { Client, Events, GatewayIntentBits, Collection } from 'discord.js'
-import { IterateFolder, IterateFolders, ResetCooldown } from './helpers.js'
+import { InitGachaChances, IterateFolder, IterateFolders, ResetCooldown, UpdateGachaChance } from './helpers.js'
 import { CronJob } from 'cron'
 
 //Start client
@@ -17,7 +17,7 @@ client.commands = await IterateFolders('commands', '.js', async (file, filePath)
 })
 
 //Event handling
-IterateFolder('events', '.js', async (file, filePath) => {
+await IterateFolder('events', '.js', async (file, filePath) => {
 	const event = (await import (filePath)).default
 	if (event.once) {
 		client.once(event.name, (...args) => event.execute(...args))
@@ -33,6 +33,8 @@ client.once(Events.ClientReady, async (readyClient) => {
 	client.cooldowns = new Collection()
 	client.cooldowns.set('daily', new Collection())
 	client.cooldowns.set('weekly', new Collection())
+
+	await InitGachaChances(client)
 
 	//Setup cronjobs
 	const daily = new CronJob('00 00 00 * * *', () => {

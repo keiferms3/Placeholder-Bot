@@ -1,5 +1,5 @@
 import { Events, TextInputBuilder, ActionRowBuilder, ModalBuilder, TextInputStyle } from 'discord.js'
-import { rollGacha } from '../commands/trinkets/gacha.js'
+import { rollGacha, viewGacha } from '../commands/trinkets/gacha.js'
 
 export default {
   name: Events.InteractionCreate,
@@ -32,6 +32,9 @@ export default {
 		//On gacha roll
 		if (button === 'gachaRoll') {
 			await rollGacha(interaction)
+		}
+		else if (button === 'gachaView') {
+			await viewGacha(interaction)
 		}
 	}
 

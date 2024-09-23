@@ -4,7 +4,7 @@ import { Config } from "../objects.js"
 const TrinketsObj = TrinketsModel
 
 //Creates a new trinket, adding it to the appropriate gacha category
-TrinketsObj.addTrinket = async function (tier, name, emoji, image, description, creatorId, guildId) {
+TrinketsObj.addTrinket = async function (tier, name, emoji, image, description, creatorId, guildId, interaction) {
     try {
         const ownerId = `gacha${tier}`
         return await TrinketsObj.create({ tier: tier, name: name, emoji: emoji, image: image, description: description, ownerId: ownerId, creatorId: creatorId, guildId: guildId }) //wow this sucks
@@ -15,14 +15,14 @@ TrinketsObj.addTrinket = async function (tier, name, emoji, image, description, 
 }
 
 //Retrieve trinket(s) by IDs provided
-TrinketsObj.getTrinkets = async function (id = undefined, ownerId = undefined, creatorId = undefined, guildId = undefined) {
+TrinketsObj.getTrinkets = async function (id = undefined, guildId = undefined, ownerId = undefined, creatorId = undefined) {
     try {
         if (id) {
             return await TrinketsObj.findOne({ where: {id: id}})
-        } else if (ownerId) {
-            return await TrinketsObj.findAll({ where: {ownerId: ownerId} })
-        } else if (creatorId) {
-            return await TrinketsObj.findAll({ where: {creatorId: creatorId} })
+        } else if (ownerId && guildId) {
+            return await TrinketsObj.findAll({ where: {ownerId: ownerId, guildId: guildId} })
+        } else if (creatorId && guildId) {
+            return await TrinketsObj.findAll({ where: {creatorId: creatorId, guildId: guildId} })
         } else if (guildId) {
             return await TrinketsObj.findAll({ where: {guildId: guildId} })
         }

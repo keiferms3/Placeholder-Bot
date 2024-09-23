@@ -1,6 +1,7 @@
 import { EmbedBuilder, SlashCommandBuilder } from "discord.js"
 import { Config, Trinkets, Users } from "../../database/objects.js"
 import emojiRegex from "emoji-regex-xs"
+import { UpdateGachaChance } from "../../helpers.js"
 
 export default {
     data: new SlashCommandBuilder()
@@ -126,9 +127,10 @@ async function create(interaction, config) {
         await Users.updateBalance(user.userId, user.guildId, -1*config.trinketT3Cost)
     }
 
-    await Trinkets.addTrinket(tier, name, emoji, image, lore, user.userId, guildId)
+    await Trinkets.addTrinket(tier, name, emoji, image, lore, user.userId, guildId, interaction)
+    UpdateGachaChance(tier, 1, interaction)
 
-    embed.setTitle(`\`${emoji} ${name}\` successfully created!`)
+    embed.setTitle(`${emoji}\`${name}\` successfully created!`)
          .setDescription(`Trinket has been added to the tier ${tier} gacha`)
     return embed
 }

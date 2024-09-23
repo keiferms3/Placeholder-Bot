@@ -60,22 +60,32 @@ export default (database, DataTypes) => {
             defaultValue: 20,
             allowNull: false,
         },
-        gachaT0Chance: { //Gacha chances must sum to 100. If under, T3 will increase. If over, higher chances may be impossible.
+        perChanceT1: {
             type: DataTypes.INTEGER,
-            defaultValue: 30,
+            defaultValue: 5,
             allowNull: false,
         },
-        gachaT1Chance: {
+        maxChanceT1: {
             type: DataTypes.INTEGER,
             defaultValue: 50,
             allowNull: false,
         },
-        gachaT2Chance: {
+        perChanceT2: {
+            type: DataTypes.INTEGER,
+            defaultValue: 3,
+            allowNull: false,
+        },
+        maxChanceT2: {
             type: DataTypes.INTEGER,
             defaultValue: 15,
             allowNull: false,
         },
-        gachaT3Chance: {
+        perChanceT3: {
+            type: DataTypes.INTEGER,
+            defaultValue: 1,
+            allowNull: false,
+        },
+        maxChanceT3: {
             type: DataTypes.INTEGER,
             defaultValue: 5,
             allowNull: false,

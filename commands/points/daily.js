@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, EmbedBuilder } from "discord.js"
 import { Config, Users } from "../../database/objects.js"
-import { CheckCooldown } from "../../helpers.js"
+import { CheckCooldown, UpdateGachaChance } from "../../helpers.js"
 
 export default {
     data: new SlashCommandBuilder()
@@ -24,7 +24,6 @@ async function daily(interaction) {
         const config = await Config.getConfig(interaction.guild.id)
         const embed = new EmbedBuilder()
             .setColor(config.embedColor)
-
         if (!cooldown) {
             await Users.updateBalance(interaction.user.id, interaction.guild.id, config.dailyPoints)
             embed.setTitle(`:white_check_mark: Daily points redeemed! :white_check_mark:`)
