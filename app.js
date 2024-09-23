@@ -32,20 +32,16 @@ await IterateFolder('events', '.js', async (file, filePath) => {
 //Startup handler
 client.once(Events.ClientReady, async (readyClient) => {
 	//Declare objects 
-	client.cooldowns = new Collection()
-	client.cooldowns.set('daily', new Collection())
-	client.cooldowns.set('weekly', new Collection())
-
 	await InitGachaChances(client)
 
 	//Setup cronjobs
-	const daily = new CronJob('00 00 00 * * *', () => {
+	const daily = new CronJob('0 0 0 * * *', () => {
 		console.log('Reset!!!')
 		ResetCooldown('daily', readyClient)
 	})
 	daily.start()
 
-	const weekly = new CronJob('00 00 00 * * 0', () => {
+	const weekly = new CronJob('0 0 0 * * 0', () => {
 		console.log('Weekly Reset!!!')
 		ResetCooldown('weekly', readyClient)
 	})

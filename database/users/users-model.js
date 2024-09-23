@@ -18,6 +18,16 @@ export default (database, DataTypes) => {
         defaultValue: 0,
         allowNull: false,
     },
+    dailyCooldown: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+        allowNull: false,
+    },
+    weeklyCooldown: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+        allowNull: false,
+    },
 }, {
     timestamps: false,
     indexes: [

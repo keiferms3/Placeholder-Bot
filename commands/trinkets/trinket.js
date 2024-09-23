@@ -169,7 +169,7 @@ async function create(interaction, config) {
     UpdateGachaChance(tier, 1, interaction)
 
     embed.setTitle(`${config[`rarityNameT${tier}`]} trinket ${emoji}\`${name}\` successfully created!`)
-         .setDescription(lore)
+         .setDescription(lore ?? '')
          .setImage(image)
     return {embeds: [embed]}
 }
@@ -203,7 +203,7 @@ function display(trinket, interaction, config) {
     const embed = new EmbedBuilder()
         .setColor(config.embedColor)
         .setTitle(`${rarity} ${trinket.emoji} \`${trinket.name}\``)
-        .setDescription(`ID: \`${trinket.id}\`\nOwned By: ${owner} since ${updatedAt}\nCreated By: ${creator} on ${createdAt}\n\n${trinket.description}`)
+        .setDescription(`ID: \`${trinket.id}\`\nOwned By: ${owner} since ${updatedAt}\nCreated By: ${creator} on ${createdAt}\n\n${trinket.description ?? ''}`)
         .setImage(trinket.image)
 
     return embed

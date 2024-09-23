@@ -2,7 +2,7 @@ import path from 'path'
 import fs from 'fs'
 import { fileURLToPath } from 'url'
 import { Collection } from 'discord.js'
-import { Config, Trinkets } from './database/objects.js'
+import { Config, Trinkets, Users } from './database/objects.js'
 
 
 export async function IterateFolder(dir, filter, func) {
@@ -39,11 +39,12 @@ export async function IterateFolders(dir, filter, func) {
 }
 
 export async function ResetCooldown(command, client) {
-    const guilds = client.cooldowns.get(command)
+    const guilds = client.guilds.cache
 		for (const guild of guilds) {
-			const cooldowns = guilds.get(guild[0])
-			for (const cooldown of cooldowns) {
-				cooldowns.set(cooldown[0], false)
+			const users = await Users.getUser(null, guild[0])
+			for (const user of users) {
+				user[`${command}Cooldown`] = false
+                user.save()
 			}
 		}
 }
@@ -52,19 +53,12 @@ export async function ResetCooldown(command, client) {
 export async function CheckCooldown(command, interaction) {
     const userId = interaction.user.id
     const guildId = interaction.guild.id
-    const guildCooldowns = interaction.client.cooldowns.get(command)
-    
+    const user = await Users.getUser(userId, guildId)
 
-    let cooldowns = guildCooldowns.get(guildId)
-    if (!cooldowns) {
-        guildCooldowns.set(guildId, new Collection())
-        cooldowns = guildCooldowns.get(guildId)
-    }
-
-    if (!cooldowns.get(userId)) {
-        cooldowns.set(userId, true)
+    if (!user[`${command}Cooldown`]) {
+        user[`${command}Cooldown`] = true
+        user.save()
         return false
-        
     } else {
         return true
     }
