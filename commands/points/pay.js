@@ -34,7 +34,11 @@ async function pay(interaction) {
         const embed = new EmbedBuilder()
             .setColor(config.embedColor)
 
-        if (Top.points < points) {
+        if (points < 0) {
+            embed.setTitle(`:x: You cannot pay negative amounts :x:`)
+                 .setDescription(`Kill yourself ryan`)
+        }
+        else if (Top.points < points) {
             embed.setTitle(`:x: You do not have enough points :x:`)
                  .setDescription(`Cannot pay \`${points} PP\`, \`${user.displayName}\` only has \`${Top.points} PP\``)
 
