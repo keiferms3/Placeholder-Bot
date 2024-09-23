@@ -1,5 +1,8 @@
 import { Sequelize } from 'sequelize'
-import { IterateFolders } from '../helpers.js'
+import { Collection } from 'discord.js'
+import path from 'path'
+import fs from 'fs'
+import { fileURLToPath } from 'url'
 
 //Start Database
 const sequelize = new Sequelize('database', 'username', 'password', {
@@ -10,7 +13,7 @@ const sequelize = new Sequelize('database', 'username', 'password', {
 })
 
 //Load all models into database and store in collection
-const models = await IterateFolders('database', '-model.js', async (file, fullPath) => { 
+const models = await IterateFolders('.', '-model.js', async (file, fullPath) => { 
 	return { key: file, value: (await import(fullPath)).default(sequelize, Sequelize.DataTypes) }
 })
 
@@ -31,3 +34,23 @@ sequelize.sync({force, alter}).then(async () => {
 	
 	console.log("Database deployed!")
 }).catch(console.error)
+
+//Copied from helpers.js because of import conflicts
+export async function IterateFolders(dir, filter, func) {
+    const __dirname = path.dirname(fileURLToPath(import.meta.url))
+    const rootFolderPath = path.join(__dirname, dir)
+    const folders = fs.readdirSync(rootFolderPath).filter(file => !(file.endsWith('.js')))
+    const func_returns = new Collection()
+
+    for (const folder of folders) {
+        const folderPath = path.join(rootFolderPath, folder)
+        const files = fs.readdirSync(folderPath).filter(file => file.endsWith(filter))
+
+        for (const file of files) {
+            const fullPath = path.join('file://', folderPath, file)
+            const kv = await func(file, fullPath) ?? {key: '', value: ''}
+            func_returns.set(kv.key, kv.value)
+        }
+    }
+    return func_returns
+}

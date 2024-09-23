@@ -22,7 +22,7 @@ export default (database, DataTypes) => {
         },
         embedColor: {
             type: DataTypes.STRING,
-            defaultValue: `#853fb5`,
+            defaultValue: '#853fb5',
             allowNull: false,
         },
         trinketT1Cost: {
@@ -43,16 +43,6 @@ export default (database, DataTypes) => {
         eightBallCost: {
             type: DataTypes.INTEGER,
             defaultValue: 100,
-            allowNull: false,
-        },
-        dialogueCost: {
-            type: DataTypes.INTEGER,
-            defaultValue: 200,
-            allowNull: false,
-        },
-        dialogueReplaceCost: {
-            type: DataTypes.INTEGER,
-            defaultValue: 1000,
             allowNull: false,
         },
         gachaRollCost: {
@@ -88,6 +78,21 @@ export default (database, DataTypes) => {
         maxChanceT3: {
             type: DataTypes.INTEGER,
             defaultValue: 5,
+            allowNull: false,
+        },
+        rarityNameT1: {
+            type: DataTypes.STRING,
+            defaultValue: 'Common',
+            allowNull: false,
+        },
+        rarityNameT2: {
+            type: DataTypes.STRING,
+            defaultValue: 'Rare',
+            allowNull: false,
+        },
+        rarityNameT3: {
+            type: DataTypes.STRING,
+            defaultValue: 'Legendary',
             allowNull: false,
         },
    }, {

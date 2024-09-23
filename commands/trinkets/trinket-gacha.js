@@ -2,22 +2,7 @@ import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, SlashComman
 import { Config, Trinkets, Users } from "../../database/objects.js"
 import { random, sleep, UpdateGachaChance } from "../../helpers.js"
 
-export default {
-    data: new SlashCommandBuilder()
-        .setName('gacha')
-        .setDescription(`It's technically not gambling!`),
-    async execute(interaction) {
-        try {
-            const response = await displayGacha(interaction)
-            await interaction.reply(response)
-        } catch (e) {
-            console.error(e)
-        }
-        
-    },
-}
-
-async function displayGacha(interaction) {
+export async function displayGacha(interaction) {
     const config = await Config.getConfig(interaction.guild.id)
     const user = await Users.getUser(interaction.user.id, interaction.guild.id)
     const embed = new EmbedBuilder()
@@ -116,9 +101,9 @@ export async function rollGacha(interaction) {
         trinket.ownerId = user.userId
         await trinket.save()
         await UpdateGachaChance(trinket.tier, -1, interaction)
-
-        embed.setTitle(`:white_check_mark: ${interaction.user.displayName} got the Tier ${trinket.tier} trinket \`${trinket.emoji} ${trinket.name}\` \`(ID ${trinket.id})\` :white_check_mark: `)
-             .setDescription(`Created by ${trinket.creatorId} on <t:${Date.parse(trinket.createdAt) / 1000}:f>`)
+        
+        embed.setTitle(`:white_check_mark: ${interaction.user.displayName} got the ${config[`rarityNameT${trinket.tier}`]} ${trinket.emoji}\`${trinket.name}\` \`(ID ${trinket.id})\` :white_check_mark: `)
+             .setDescription(`Created by ${interaction.client.users.cache.get(trinket.creatorId) ?? 'Unknown'} on <t:${Date.parse(trinket.createdAt) / 1000}:f>`)
              .setImage(trinket.image)
     }
     
@@ -129,14 +114,23 @@ export async function viewGacha(interaction) {
     const config = await Config.getConfig(interaction.guild.id)
     const chances = interaction.client.gachaChances.get(interaction.guild.id)
     const trinkets = await Trinkets.getTrinkets(undefined, interaction.guild.id)
-    let tier1 = `:third_place: Tier 1 Trinkets :third_place:\n`
-    let tier2 = `:second_place: Tier 2 Trinkets :second_place:\n`
-    let tier3 = `:first_place: Tier 3 Trinkets :first_place:\n`
-    for (const trinket of trinkets.filter(t => t.ownerId === 'gacha1')) { tier1 = tier1 + `${trinket.emoji}\`${trinket.name}\`**,** `}
-    for (const trinket of trinkets.filter(t => t.ownerId === 'gacha2')) { tier2 = tier2 + `${trinket.emoji}\`${trinket.name}\`**,** `}
+
+    let tier1 = `:third_place: **${config.rarityNameT1} Trinkets** :third_place:\n`
+    let tier2 = `:second_place: **${config.rarityNameT2} Trinkets** :second_place:\n`
+    let tier3 = `:first_place: **${config.rarityNameT3} Trinkets** :first_place:\n`
+
+    for (const trinket of trinkets.filter(t => t.ownerId === 'gacha1')) { tier1 = tier1 + `${trinket.emoji}\`${trinket.name}\` \`${trinket.id}\`**,** `}
+    for (const trinket of trinkets.filter(t => t.ownerId === 'gacha2')) { tier2 = tier2 + `${trinket.emoji}\`${trinket.name}\` \`${trinket.id}\`**,** `}
     for (const trinket of trinkets.filter(t => t.ownerId === 'gacha3')) { tier3 = tier3 + `${trinket.emoji}\`${trinket.name}\`**,** `}
 
-    let description = `Tier 1 Chance: \`${chances.get(1)}%\`\nTier 2 Chance: \`${chances.get(2)}%\`\nTier 3 Chance: \`${chances.get(3)}%\`\n\n${tier1}\n${tier2}\n${tier3}`
+    if (tier1 === `:third_place: **${config.rarityNameT1} Trinkets** :third_place:\n`) { tier1 = tier1 + '`NOTHING!`'}
+    else { tier1 = tier1.substring(0, tier1.lastIndexOf('**,**')) }
+    if (tier2 === `:second_place: **${config.rarityNameT2} Trinkets** :second_place:\n`) { tier2 = tier2 + '`NOTHING!`'}
+    else { tier2 = tier2.substring(0, tier2.lastIndexOf('**,**')) }
+    if (tier3 === `:first_place: **${config.rarityNameT3} Trinkets** :first_place:\n`) { tier3 = tier3 + '`NOTHING!`'}
+    else { tier3 = tier3.substring(0, tier3.lastIndexOf('**,**')) }
+    
+    let description = `${config.rarityNameT1} Chance: \`${chances.get(1)}%\`\n${config.rarityNameT2} Chance: \`${chances.get(2)}%\`\n${config.rarityNameT3} Chance: \`${chances.get(3)}%\`\n\n${tier3}\n\n${tier2}\n\n${tier1}`
     let embed = new EmbedBuilder()
             .setColor(config.embedColor)
             .setTitle(`:mag_right: Gacha Information :mag:`)

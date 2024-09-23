@@ -1,5 +1,5 @@
 import { Events, TextInputBuilder, ActionRowBuilder, ModalBuilder, TextInputStyle } from 'discord.js'
-import { rollGacha, viewGacha } from '../commands/trinkets/gacha.js'
+import { rollGacha, viewGacha } from '../commands/trinkets/trinket-gacha.js'
 
 export default {
   name: Events.InteractionCreate,

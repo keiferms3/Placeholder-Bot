@@ -10,7 +10,7 @@
   },
   "scripts": {
     "start": "node app.js",
-    "register": "node deploy-commands.js",
+    "register": "node register.js",
     "deploy-db": "node ./database/database.js -a",
     "dev": "nodemon app.js"
   },

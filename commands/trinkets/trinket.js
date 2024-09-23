@@ -2,6 +2,7 @@ import { EmbedBuilder, SlashCommandBuilder } from "discord.js"
 import { Config, Trinkets, Users } from "../../database/objects.js"
 import emojiRegex from "emoji-regex-xs"
 import { UpdateGachaChance } from "../../helpers.js"
+import { displayGacha } from "./trinket-gacha.js"
 
 export default {
     data: new SlashCommandBuilder()
@@ -11,7 +12,32 @@ export default {
         .addSubcommand((view) => (
             view
             .setName('view')
-            .setDescription('View a specific trinket')
+            .setDescription('View a specific trinket by ID')
+            .addIntegerOption((int) => (
+                int
+                .setName('ID')
+                .setDescription('Trinket\'s unique ID number')
+                .setRequired(true)
+            ))
+        ))
+        //Trinket search by name command
+        .addSubcommand((search) => (
+            search
+            .setName('search')
+            .setDescription('View a specific trinket by name')
+            .addStringOption((name) => (
+                name
+                .setName('name')
+                .setDescription('Trinket\'s non-unique name')
+                .setRequired(true)
+                .setAutocomplete(true)
+            ))
+        ))
+        //Trinket gacha roll command
+        .addSubcommand((roll) => (
+            roll
+            .setName('roll')
+            .setDescription('Roll for trinkets!')
         ))
         //Trinket creation command
         .addSubcommand((create) => (
@@ -20,10 +46,10 @@ export default {
             .setDescription('Create a new trinket! Costs Placeholder Points to use, type /shop to view this server\'s prices!')
             .addIntegerOption((int) => (
                 int
-                .setName('tier')
-                .setDescription('The trinket\'s rarity, affects cost')
+                .setName('rarity')
+                .setDescription('The trinket\'s rarity, affects cost. Command choice names are not affected by config.')
                 .setRequired(true)
-                .addChoices([{name: 'Tier 1', value: 1}, {name: 'Tier 2', value: 2}, {name: 'Tier 3', value: 3}])
+                .addChoices([{name: 'Common', value: 1}, {name: 'Rare', value: 2}, {name: 'Legendary', value: 3}])
             ))
             .addStringOption((string) => (
                 string
@@ -53,6 +79,7 @@ export default {
                 .setRequired(false)
                 .setMaxLength(1200)
             ))
+            
         )),
     async execute(interaction) {
         try {
@@ -69,19 +96,23 @@ async function trinket(interaction) {
     
     const command = interaction.options.getSubcommand()
     if (command === 'create') {
-        var embed = await create(interaction, config)
+        var response = await create(interaction, config)
+    } else if (command === 'roll') {
+        var response = displayGacha(interaction)
     } else if (command === 'view') {
-        var embed = view(interaction, config)
+        var response = view(interaction, config)
+    } else if (command === 'search') {
+        var response = search(interaction, config)
     } else {
         return `Command "\`${command}\`" not found`
     }
 
-    return {embeds: [embed]}
+    return response
 }
 
 async function create(interaction, config) {
     const guildId = interaction.guild.id
-    const tier = interaction.options.getInteger('tier')
+    const tier = interaction.options.getInteger('rarity')
     const name = interaction.options.getString('name')
     const emoji = interaction.options.getString('emoji')
     const image = interaction.options.getString('image')
@@ -110,19 +141,19 @@ async function create(interaction, config) {
     const user = await Users.getUser(interaction.user.id, guildId)
     if (tier === 1) {
         if (user.points < config.trinketT1Cost) {
-            return embed.setDescription(`Tier 1 trinkets require \`${config.trinketT1Cost} PP\`, you have \`${user.points} PP\``)
+            return embed.setDescription(`${config.rarityNameT1} trinkets require \`${config.trinketT1Cost} PP\`, you have \`${user.points} PP\``)
         }
         await Users.updateBalance(user.userId, user.guildId, -1*config.trinketT1Cost)
     }
     else if (tier === 2) {
         if (user.points < config.trinketT2Cost) {
-            return embed.setDescription(`Tier 2 trinkets require \`${config.trinketT2Cost} PP\`, you have \`${user.points} PP\``)
+            return embed.setDescription(`${config.rarityNameT2} trinkets require \`${config.trinketT2Cost} PP\`, you have \`${user.points} PP\``)
         }
         await Users.updateBalance(user.userId, user.guildId, -1*config.trinketT2Cost)
     }
     else if (tier === 3) {
         if (user.points < config.trinketT3Cost) {
-            return embed.setDescription(`Tier 3 trinkets require \`${config.trinketT3Cost} PP\`, you have \`${user.points} PP\``)
+            return embed.setDescription(`${config.rarityNameT3} trinkets require \`${config.trinketT3Cost} PP\`, you have \`${user.points} PP\``)
         }
         await Users.updateBalance(user.userId, user.guildId, -1*config.trinketT3Cost)
     }
@@ -130,12 +161,20 @@ async function create(interaction, config) {
     await Trinkets.addTrinket(tier, name, emoji, image, lore, user.userId, guildId, interaction)
     UpdateGachaChance(tier, 1, interaction)
 
-    embed.setTitle(`${emoji}\`${name}\` successfully created!`)
+    embed.setTitle(`:white_check_mark: ${config[`rarityNameT${tier}`]} trinket ${emoji}\`${name}\` successfully created! :white_check_mark:`)
          .setDescription(`Trinket has been added to the tier ${tier} gacha`)
-    return embed
+    return {embeds: [embed]}
 }
 
 async function view(interaction, config) {
+    
+}
+
+async function search(interaction, config) {
+
+}
+
+async function display(interaction, config) {
 
 }
 
