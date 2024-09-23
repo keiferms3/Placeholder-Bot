@@ -1,5 +1,6 @@
 import { Events } from 'discord.js'
 import { Users, Config } from '../database/objects.js'
+import { InitGachaChances } from '../helpers.js'
 
 export default {
   name: Events.GuildCreate,
@@ -12,6 +13,8 @@ export default {
     }
 
     Config.addGuild(guild)
+    
+    await InitGachaChances(guild.client)
     
   }
 }
