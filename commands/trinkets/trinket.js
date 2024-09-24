@@ -181,7 +181,7 @@ async function view(interaction, config) {
     let embed
     const trinket = await Trinkets.getTrinkets(id)
     if (trinket) {
-        embed = display(trinket, interaction, config)
+        embed = await display(trinket, interaction, config)
     } else {
         embed = new EmbedBuilder().setTitle('oops')
     }
@@ -192,7 +192,8 @@ async function search(interaction, config) {
     
 }
 
-function display(trinket, interaction, config) {
+async function display(trinket, interaction, config) {
+    await interaction.guild.members.fetch() // Load guild members into cache
     const rarity = config[`rarityNameT${trinket.tier}`]
     const owner = trinket.ownerId.includes('gacha') ? '*The Gacha*' : interaction.client.users.cache.get(trinket.ownerId)
     const creator = interaction.client.users.cache.get(trinket.creatorId) ?? 'Unknown'
