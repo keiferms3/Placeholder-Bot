@@ -49,7 +49,7 @@ async function daily(interaction) {
 
         } else {
             embed.setTitle(`:x: Daily points on cooldown :x:`)
-                 .setDescription(`Resets at <t:1726027200:t>`)
+                 .setDescription(`Resets at <t:${Date.parse(cron.sendAt('0 0 0 * * *')) / 1000}:t>`)
         }
         return { embeds: [embed] }
     } catch (e) {

@@ -1,13 +1,12 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, SlashCommandBuilder } from "discord.js"
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from "discord.js"
 import { Config, Trinkets, Users } from "../../database/objects.js"
 import { random, sleep, UpdateGachaChance } from "../../helpers.js"
 
 export async function displayGacha(interaction) {
     const config = await Config.getConfig(interaction.guild.id)
-    const user = await Users.getUser(interaction.user.id, interaction.guild.id)
     const embed = new EmbedBuilder()
         .setColor(config.embedColor)
-        .setTitle(`:tickets: GAMBLING !!! :tickets:`)
+        .setTitle(`:tickets: Trinket Roulette :tickets:`)
         .setDescription(`Press button to roll for \`${config.gachaRollCost} PP\``)
     
     const buttonRow = new ActionRowBuilder()
