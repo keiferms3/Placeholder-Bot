@@ -9,11 +9,10 @@ export default {
             user    
             .setName('user')
             .setDescription('The user who\'s balance you wish to view')))
-        .addStringOption((visible) => (
+        .addBooleanOption((visible) => (
             visible
-            .setName('visibility'))
-            .setDescription('Whether the command\'s output should be visible to others or not (defaults to Private)')
-            .addChoices([{name: 'Public', value: 'public'}, {name: 'Private', value: 'private'}])),
+            .setName('hidden'))
+            .setDescription('If true, command\'s output will not be visible to others')),
     async execute(interaction) {
         const response = await balance(interaction)
         await interaction.reply(response)
@@ -23,7 +22,7 @@ export default {
 async function balance(interaction) {
     try {
         const user = interaction.options.getUser('user') ?? interaction.user
-        const ephemeral = interaction.options.getString('visibility') === 'private' ? true : false
+        const ephemeral = interaction.options.getBoolean('hidden')
         const balance = await Users.getBalance(user.id, interaction.guild.id)
         const embedColor = await Config.getConfig(interaction.guild.id, 'embedColor')
         const trinkets = await Trinkets.getTrinkets(undefined, interaction.guild.id, user.id)

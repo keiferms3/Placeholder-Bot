@@ -114,10 +114,12 @@ export async function viewGacha(interaction) {
     const chances = interaction.client.gachaChances.get(interaction.guild.id)
     const trinkets = await Trinkets.getTrinkets(undefined, interaction.guild.id)
 
-    //If these strings are ever changed, copy and paste them below as well
-    let tier1 = `:third_place: **${config.rarityNameT1} Trinkets** :third_place:\n`
-    let tier2 = `:second_place: **${config.rarityNameT2} Trinkets** :second_place:\n`
-    let tier3 = `:first_place: **${config.rarityNameT3} Trinkets** :first_place:\n`
+    const t1Header = `**--- ${config.rarityNameT1} Trinkets ---**\n`
+    const t2Header = `**--- ${config.rarityNameT2} Trinkets ---**\n`
+    const t3Header = `**--- ${config.rarityNameT3} Trinkets ---**\n`
+    let tier1 = t1Header
+    let tier2 = t2Header
+    let tier3 = t3Header
 
     //List trinkets of each rarity
     for (const trinket of trinkets.filter(t => t.ownerId === 'gacha1')) { tier1 = tier1 + `${trinket.emoji}\`${trinket.name}\` \`#${trinket.id}\`**,** `}
@@ -125,11 +127,11 @@ export async function viewGacha(interaction) {
     for (const trinket of trinkets.filter(t => t.ownerId === 'gacha3')) { tier3 = tier3 + `${trinket.emoji}***\`${trinket.name}\`*** \`#${trinket.id}\`**,** `}
 
     //If there are no trinkets of rarity, list "NOTHING". Otherwise, remove the last comma in the list
-    if (tier1 === `:third_place: **${config.rarityNameT1} Trinkets** :third_place:\n`) { tier1 = tier1 + '`NOTHING!`'}
+    if (tier1 === t1Header) { tier1 = tier1 + '`NOTHING!`'}
     else { tier1 = tier1.substring(0, tier1.lastIndexOf('**,**')) }
-    if (tier2 === `:second_place: **${config.rarityNameT2} Trinkets** :second_place:\n`) { tier2 = tier2 + '`NOTHING!`'}
+    if (tier2 === t2Header) { tier2 = tier2 + '`NOTHING!`'}
     else { tier2 = tier2.substring(0, tier2.lastIndexOf('**,**')) }
-    if (tier3 === `:first_place: **${config.rarityNameT3} Trinkets** :first_place:\n`) { tier3 = tier3 + '`NOTHING!`'}
+    if (tier3 === t3Header) { tier3 = tier3 + '`NOTHING!`'}
     else { tier3 = tier3.substring(0, tier3.lastIndexOf('**,**')) }
     
     let description = `${config.rarityNameT1} Chance: \`${chances.get(1)}%\`\n${config.rarityNameT2} Chance: \`${chances.get(2)}%\`\n${config.rarityNameT3} Chance: \`${chances.get(3)}%\`\n\n${tier3}\n\n${tier2}\n\n${tier1}`
