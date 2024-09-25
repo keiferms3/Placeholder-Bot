@@ -9,6 +9,11 @@ export default {
             points
             .setName('points')
             .setDescription('View the richest members of the server')
+            .addStringOption((visible) => (
+                visible
+                .setName('visibility'))
+                .setDescription('Whether the command\'s output should be visible to others or not (defaults to Private)')
+                .addChoices([{name: 'Public', value: 'public'}, {name: 'Private', value: 'private'}]))
         )),
         // .addSubcommand(trinkets => (
         //     trinkets
@@ -27,6 +32,7 @@ export default {
 }
 
 async function points(interaction) {
+    const ephemeral = interaction.options.getString('visibility') === 'private' ? true : false
     const displayNum = 10
     const config = await Config.getConfig(interaction.guild.id)
     const embed = new EmbedBuilder()
@@ -43,7 +49,7 @@ async function points(interaction) {
         desc += `**${i+1}.** \`${user.displayName}\` \`${users[i].points} PP\`\n`
     }
     embed.setDescription(desc)
-    return {embeds: [embed]}
+    return {embeds: [embed], ephemeral: ephemeral}
 }
 
 async function trinkets(interaction) {
