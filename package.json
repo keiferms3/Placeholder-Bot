@@ -9,7 +9,7 @@
     "node": ">=18.x"
   },
   "scripts": {
-    "start": "node app.js",
+    "start": "node register.js && node app.js",
     "register": "node register.js",
     "deploy-db": "node ./database/database.js -a",
     "dev": "nodemon app.js"
