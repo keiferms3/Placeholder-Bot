@@ -108,7 +108,7 @@ async function trinket(interaction) {
         var response = await search(interaction, config)
     } 
     else {
-        return `Command "\`${command}\`" not found`
+        return `Tinket command "\`${command}\`" not found`
     }
 
     return response
