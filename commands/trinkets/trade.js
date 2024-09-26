@@ -158,21 +158,23 @@ async function add(interaction) {
     if (points) {
         const balance = await Users.getBalance(user.id, interaction.guild.id)
         if (points > balance) {
-            errors += `You don't have enough points to offer \`${points} PP\``
+            errors += `You don't have enough points to offer \`${points} PP\`\n`
         } else if (points < 0) {
-            errors += `You cannot offer negative points`
+            errors += `You cannot offer negative points\n`
         } else {
             //If point value is valid
-            trade[`points${whichUser}`] = points //TODO Make this actually *add* later, += wasn't working fsr
+            trade[`points${whichUser}`] += points
         }
     }
 
     //Edit trade window
+    const config = Config.getConfig(interaction.guild.id)
     const message = await trade.reply.fetch()
-    const embed = message.embeds[0]
-    for (const field of embed.fields) {
+    const tradeEmbed = message.embeds[0]
+    let content = '`'
+    for (const field of tradeEmbed.fields) {
         if (field.name === user.displayName) {
-            let content = '`'
+            
             //Points
             if (trade[`points${whichUser}`] > 0) {
                 content += `${trade[`points${whichUser}`]} Placeholder Points, `
@@ -187,10 +189,12 @@ async function add(interaction) {
             break
         }
     }
-    trade.reply.edit({embeds: [embed]})
+    
+    await trade.reply.edit({embeds: [tradeEmbed]})
 
-    if (errors) {
-        return {content: errors, ephemeral: true}
-    }
-    return {content: `Successfully added to trade`, ephemeral: true}
+    const embed = new EmbedBuilder()
+        .setColor(tradeEmbed.color)
+        .setDescription(`${errors}Successfully added ${content} to trade`)
+
+    return {embeds: [embed], ephemeral: true}
 }
