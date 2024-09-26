@@ -166,7 +166,7 @@ async function create(interaction, config) {
     }
 
     await Trinkets.addTrinket(tier, name, emoji, image, lore, user.userId, guildId, interaction)
-    UpdateGachaChance(tier, 1, interaction)
+    UpdateGachaChance(tier, interaction)
 
     embed.setTitle(`${config[`rarityNameT${tier}`]} trinket ${emoji}\`${name}\` successfully created!`)
          .setDescription(lore)

@@ -95,12 +95,12 @@ export async function InitGachaChances(client) {
 }
 
 //Called when a trinket is added/removed from the gacha. Operation = 1 for adding, -1 for removing
-export async function UpdateGachaChance(tier, operation = 1, interaction) {
+export async function UpdateGachaChance(tier, interaction) {
     const guildId = interaction.guild.id
     const config = await Config.getConfig(guildId)
     const gachaChances = interaction.client.gachaChances.get(guildId)
+    const trinkets = await Trinkets.getTrinkets(undefined, guildId, `gacha${tier}`)
 
-    let chance = gachaChances.get(tier)
-    chance = clamp(chance + (operation * config[`perChanceT${tier}`]), 0, config[`maxChanceT${tier}`])
+    const chance = clamp(trinkets.length * config[`perChanceT${tier}`], 0, config[`maxChanceT${tier}`])
     gachaChances.set(tier, chance)
 }

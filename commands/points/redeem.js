@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, EmbedBuilder } from "discord.js"
 import { Config, Users } from "../../database/objects.js"
-import { CheckCooldown, UpdateGachaChance } from "../../helpers.js"
+import { CheckCooldown } from "../../helpers.js"
 import cron from 'cron'
 
 export default {

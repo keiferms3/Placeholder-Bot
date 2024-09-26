@@ -1,6 +1,6 @@
 import 'dotenv/config'
 import { Client, Events, GatewayIntentBits, Collection } from 'discord.js'
-import { InitGachaChances, IterateFolder, IterateFolders, ResetCooldown, UpdateGachaChance } from './helpers.js'
+import { InitGachaChances, IterateFolder, IterateFolders, ResetCooldown } from './helpers.js'
 import { CronJob } from 'cron'
 
 //Start client
@@ -33,6 +33,7 @@ await IterateFolder('events', '.js', async (file, filePath) => {
 client.once(Events.ClientReady, async (readyClient) => {
 	//Declare objects 
 	await InitGachaChances(client)
+	const trades = new Collection()
 
 	//Setup cronjobs
 	const daily = new CronJob('0 0 0 * * *', () => {

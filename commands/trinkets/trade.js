@@ -15,6 +15,21 @@ export default {
                 .setDescription('The user to trade with')
                 .setRequired(true)
             ))
+        ))
+        .addSubcommand(add => (
+            add
+            .setName('add')
+            .setDescription('Add items/points to an existing trade')
+            .addStringOption(items => (
+                items
+                .setName('items')
+                .setDescription('List item IDs separated by commas to add to the trade (e.g. "5, 6, 11" or "5,6,11")')
+            ))
+            .addIntegerOption(points => (
+                points
+                .setName('points')
+                .setDescription('Amount of Placeholder Points to trade')
+            ))
         )),
     async execute(interaction) {
         const command = interaction.options.getSubcommand()
@@ -99,5 +114,8 @@ async function handleTradeResponse(reply, interaction) {
 }
 
 async function add(interaction) {
-    
+    const items = interaction.options.getString('items').replace(/\s/g, '').split(',')
+    const points = interaction.options.getInteger('points')
+
+    return `${items}`
 }

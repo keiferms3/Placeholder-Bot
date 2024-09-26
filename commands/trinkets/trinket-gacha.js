@@ -98,7 +98,7 @@ export async function rollGacha(interaction) {
     } else {
         trinket.ownerId = user.userId
         await trinket.save()
-        await UpdateGachaChance(trinket.tier, -1, interaction)
+        await UpdateGachaChance(trinket.tier, interaction)
         
         await interaction.guild.members.fetch() //Load all guild users into cache
         embed.setTitle(`:white_check_mark: ${interaction.user.displayName} got ${config[`rarityNameT${trinket.tier}`]} ${trinket.emoji}\`${trinket.name}\` \`(ID ${trinket.id})\` :white_check_mark: `)
