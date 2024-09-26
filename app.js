@@ -32,8 +32,11 @@ await IterateFolder('events', '.js', async (file, filePath) => {
 //Startup handler
 client.once(Events.ClientReady, async (readyClient) => {
 	//Declare objects 
+	client.gachaChances = new Collection()
 	await InitGachaChances(client)
-	const trades = new Collection()
+
+	client.trades = new Collection()
+	for (const guild of client.guilds.cache) { client.trades.set(guild[0], []) }
 
 	//Setup cronjobs
 	const daily = new CronJob('0 0 0 * * *', () => {

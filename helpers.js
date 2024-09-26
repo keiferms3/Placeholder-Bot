@@ -79,7 +79,6 @@ export function clamp(number, min, max) {
 }
 
 export async function InitGachaChances(client) {
-    client.gachaChances = new Collection()
     for (const guild of client.guilds.cache) {
         const config = await Config.getConfig(guild[0])
         if (!config) { continue }

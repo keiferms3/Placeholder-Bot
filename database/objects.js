@@ -7,15 +7,15 @@ export const Config = ConfigObj
 export const Trinkets = TrinketsObj
 
 export class Trade {
-    constructor(uid1, uid2, gid) {
-        this.userId1 = uid1,
-        this.userId2 = uid2,
-        this.guildId = gid,
+    constructor(reply, uid1, uid2, gid) {
+        this.reply = reply //Stores a reference to the message with the trade window
+        this.userId1 = uid1
+        this.userId2 = uid2
+        this.guildId = gid
         this.items1 = []
-        this.points1 = 0
         this.items2 = []
+        this.points1 = 0
         this.points2 = 0
+        
     }
-
-
 }
