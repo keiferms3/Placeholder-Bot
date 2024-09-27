@@ -222,17 +222,24 @@ async function add(interaction) {
             content += '`'
             field.value = content
 
-            for (let c in tradeComponents.components) {
-                const component = tradeComponents.components[c]
-                if (component.customId === `ready${user.id}` && component.style === ButtonStyle.Primary) { //Find the matching ready button
-                    const newButton = new ButtonBuilder()
-                        .setLabel(component.label)
-                        .setCustomId(component.customId)
-                        .setStyle(ButtonStyle.Secondary)
-                    user.id === trade.userId1 ? trade.ready1 = false : trade.ready2 = false
-                    tradeComponents.components[c] = newButton
-                }
-            }
+            //TODO implement this some time, this solution doesn't work properly and I need to add other things :(
+            //If trade contents change, unready both users
+            // for (let c in tradeComponents.components) {
+            //     const component = tradeComponents.components[c]
+            //     if (component.customId.startsWith('ready') && component.style === ButtonStyle.Primary) { //Find ready buttons
+            //         const newButton = new ButtonBuilder()
+            //             .setLabel(component.label)
+            //             .setCustomId(component.customId)
+            //             .setStyle(ButtonStyle.Secondary)
+            //         tradeComponents.components[c] = newButton
+            //     }
+            //     else if (component.customId === 'readyComplete') {
+            //         tradeComponents.components.splice(0, 1)
+            //     }
+            // }
+            // trade.ready1 = false
+            // trade.ready2 = false
+            // trade.completeButton = false
             break
         }
     }
