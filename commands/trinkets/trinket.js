@@ -19,6 +19,10 @@ export default {
                 .setDescription('Trinket\'s unique ID number')
                 .setRequired(true)
             ))
+            .addBooleanOption((visible) => (
+                visible
+                .setName('hidden'))
+                .setDescription('If true, command\'s output will not be visible to others'))
         ))
         //Trinket search by name command
         .addSubcommand((search) => (
@@ -32,12 +36,20 @@ export default {
                 .setRequired(true)
                 .setAutocomplete(true)
             ))
+            .addBooleanOption((visible) => (
+                visible
+                .setName('hidden'))
+                .setDescription('If true, command\'s output will not be visible to others'))
         ))
         //Trinket gacha roll command
         .addSubcommand((roll) => (
             roll
             .setName('roll')
             .setDescription('Roll for trinkets!')
+            .addBooleanOption((visible) => (
+                visible
+                .setName('hidden'))
+                .setDescription('If true, command\'s output will not be visible to others'))
         ))
         //Trinket creation command
         .addSubcommand((create) => (
@@ -79,7 +91,10 @@ export default {
                 .setRequired(false)
                 .setMaxLength(1200)
             ))
-            
+            .addBooleanOption((visible) => (
+                visible
+                .setName('hidden'))
+                .setDescription('If true, command\'s output will not be visible to others'))
         )),
     async execute(interaction) {
         try {
@@ -121,6 +136,7 @@ async function create(interaction, config) {
     const emojiString = interaction.options.getString('emoji')
     const image = interaction.options.getString('image')
     const lore = interaction.options.getString('description')
+    const ephemeral = interaction.options.getBoolean('hidden')
     const embed = new EmbedBuilder()
         .setColor(config.embedColor)
         .setTitle(`:x: Failed to create trinket :x:`)
@@ -172,12 +188,13 @@ async function create(interaction, config) {
     embed.setTitle(`${config[`rarityNameT${tier}`]} trinket ${emoji}\`${name}\` successfully created!`)
          .setDescription(lore)
          .setImage(image)
-    return {embeds: [embed]}
+    return {embeds: [embed], ephemeral: ephemeral}
 }
 
 async function view(interaction, config) {
     const guildId = interaction.guild.id
     const id = interaction.options.getInteger('id')
+    const ephemeral = interaction.options.getBoolean('hidden')
 
     let embed
     const trinket = await Trinkets.getTrinkets(id)
@@ -186,7 +203,7 @@ async function view(interaction, config) {
     } else {
         embed = new EmbedBuilder().setTitle('oops')
     }
-    return {embeds: [embed]}
+    return {embeds: [embed], ephemeral: ephemeral}
 }
 
 async function search(interaction, config) {

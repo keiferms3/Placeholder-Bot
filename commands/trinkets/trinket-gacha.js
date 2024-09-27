@@ -3,6 +3,7 @@ import { Config, Trinkets, Users } from "../../database/objects.js"
 import { random, sleep, UpdateGachaChance } from "../../helpers.js"
 
 export async function displayGacha(interaction) {
+    const ephemeral = interaction.options.getBoolean('hidden')
     const config = await Config.getConfig(interaction.guild.id)
     const embed = new EmbedBuilder()
         .setColor(config.embedColor)
@@ -23,7 +24,7 @@ export async function displayGacha(interaction) {
                 .setStyle(ButtonStyle.Secondary)
         )
 
-    return {embeds: [embed], components: [buttonRow]}
+    return {embeds: [embed], components: [buttonRow], ephemeral: ephemeral}
 }
 
 export async function rollGacha(interaction) {
