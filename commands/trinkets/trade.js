@@ -204,6 +204,7 @@ async function add(interaction) {
     //Edit trade window
     const message = await trade.reply.fetch()
     const tradeEmbed = message.embeds[0]
+    const tradeComponents = message.components[0]
     let content = '`'
     for (const field of tradeEmbed.fields) { //Each side of the trade is stored in an embed field, iterate to find the user's side then break
         if (field.name === user.displayName) {
@@ -220,11 +221,23 @@ async function add(interaction) {
             content = content.slice(0, -2)
             content += '`'
             field.value = content
+
+            for (let c in tradeComponents.components) {
+                const component = tradeComponents.components[c]
+                if (component.customId === `ready${user.id}` && component.style === ButtonStyle.Primary) { //Find the matching ready button
+                    const newButton = new ButtonBuilder()
+                        .setLabel(component.label)
+                        .setCustomId(component.customId)
+                        .setStyle(ButtonStyle.Secondary)
+                    user.id === trade.userId1 ? trade.ready1 = false : trade.ready2 = false
+                    tradeComponents.components[c] = newButton
+                }
+            }
             break
         }
     }
     
-    await trade.reply.edit({embeds: [tradeEmbed]})
+    await trade.reply.edit({embeds: [tradeEmbed], components: [tradeComponents]})
 
     const embed = new EmbedBuilder()
         .setColor(config.embedColor)
@@ -242,14 +255,11 @@ async function handleTrade(reply, interaction) {
     const trade = trades.find((t) => t.userId1 === user.id || t.userId2 === user.id)
 
     let tradeComplete = false
-    let ready1 = false
-    let ready2 = false
-    let isCompleteButton = false
 
     while (tradeComplete === false) {
         //First, check ready status and determine whether to display trade completion button
-        if (ready1 && ready2) {
-            isCompleteButton = true
+        if (trade.ready1 && trade.ready2) {
+            trade.completeButton = true
             const completeButton = new ButtonBuilder()
                 .setCustomId('readyComplete')
                 .setLabel('Complete Trade')
@@ -258,8 +268,8 @@ async function handleTrade(reply, interaction) {
             components.components.unshift(completeButton)
             reply = await reply.edit({components: [components]})
         } 
-        else if (isCompleteButton) {
-            isCompleteButton = false
+        else if (trade.completeButton) {
+            trade.completeButton = false
             const components = reply.components[0]
             components.components.splice(0, 1)
             reply = await reply.edit({components: [components]})
@@ -282,7 +292,7 @@ async function handleTrade(reply, interaction) {
                 const component = components[0].components[c]
                 if (component.customId === customId) { //Find the matching ready button
                     const ready = (component.style === ButtonStyle.Secondary)
-                    customId === `ready${user.id}` ? ready1 = ready : ready2 = ready
+                    customId === `ready${user.id}` ? trade.ready1 = ready : trade.ready2 = ready
 
                     const newComponent = new ButtonBuilder()
                         .setLabel(component.label)

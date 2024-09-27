@@ -16,6 +16,8 @@ export class Trade {
         this.items2 = []
         this.points1 = 0
         this.points2 = 0
-        
+        this.ready1 = false
+        this.ready2 = false
+        this.completeButton = false
     }
 }
