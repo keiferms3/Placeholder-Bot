@@ -182,10 +182,10 @@ async function create(interaction, config) {
         await Users.updateBalance(user.userId, user.guildId, -1*config.trinketT3Cost)
     }
 
-    await Trinkets.addTrinket(tier, name, emoji, image, lore, user.userId, guildId, ephemeral, interaction)
+    const trinket = await Trinkets.addTrinket(tier, name, emoji, image, lore, user.userId, guildId, ephemeral, interaction)
     UpdateGachaChance(tier, interaction)
 
-    embed.setTitle(`${config[`rarityNameT${tier}`]} trinket ${emoji}\`${name}\` successfully created!`)
+    embed.setTitle(`${config[`rarityNameT${tier}`]} trinket ${emoji}\`${name}\` \`(ID ${trinket.id})\` successfully created!`)
          .setDescription(lore)
          .setImage(image)
     return {embeds: [embed], ephemeral: ephemeral}
