@@ -4,10 +4,21 @@ import { Config } from "../objects.js"
 const TrinketsObj = TrinketsModel
 
 //Creates a new trinket, adding it to the appropriate gacha category
-TrinketsObj.addTrinket = async function (tier, name, emoji, image, description, creatorId, guildId, interaction) {
+TrinketsObj.addTrinket = async function (tier, name, emoji, image, description, creatorId, guildId, hidden, interaction) {
     try {
+        if (!hidden) hidden = false
         const ownerId = `gacha${tier}`
-        return await TrinketsObj.create({ tier: tier, name: name, emoji: emoji, image: image, description: description, ownerId: ownerId, creatorId: creatorId, guildId: guildId }) //wow this sucks
+        return await TrinketsObj.create({ 
+            tier: tier, 
+            name: name, 
+            emoji: emoji, 
+            image: image, 
+            description: description, 
+            ownerId: ownerId, 
+            creatorId: creatorId, 
+            guildId: guildId, 
+            hidden: hidden 
+        })
     } catch (e) {
         console.error(e)
         return e

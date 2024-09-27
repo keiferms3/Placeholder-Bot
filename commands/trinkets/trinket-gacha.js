@@ -98,6 +98,7 @@ export async function rollGacha(interaction) {
         Users.updateBalance(user.userId, user.guildId, config.gachaRollCost)
     } else {
         trinket.ownerId = user.userId
+        trinket.hidden = false
         await trinket.save()
         await UpdateGachaChance(trinket.tier, interaction)
         
@@ -123,9 +124,9 @@ export async function viewGacha(interaction) {
     let tier3 = t3Header
 
     //List trinkets of each rarity
-    for (const trinket of trinkets.filter(t => t.ownerId === 'gacha1')) { tier1 = tier1 + `${trinket.emoji}\`${trinket.name}\` \`#${trinket.id}\`**,** `}
-    for (const trinket of trinkets.filter(t => t.ownerId === 'gacha2')) { tier2 = tier2 + `${trinket.emoji}**\`${trinket.name}\`** \`#${trinket.id}\`**,** `}
-    for (const trinket of trinkets.filter(t => t.ownerId === 'gacha3')) { tier3 = tier3 + `${trinket.emoji}***\`${trinket.name}\`*** \`#${trinket.id}\`**,** `}
+    for (const trinket of trinkets.filter(t => t.ownerId === 'gacha1')) { tier1 = tier1 + (!trinket.hidden ? `${trinket.emoji}\`${trinket.name}\` \`#${trinket.id}\`**,** ` : `:question:\`???\` \`#${trinket.id}\`**,** `)}
+    for (const trinket of trinkets.filter(t => t.ownerId === 'gacha2')) { tier2 = tier2 + (!trinket.hidden ? `${trinket.emoji}**\`${trinket.name}\`** \`#${trinket.id}\`**,** ` : `:question:\`???\` \`#${trinket.id}\`**,** `)}
+    for (const trinket of trinkets.filter(t => t.ownerId === 'gacha3')) { tier3 = tier3 + (!trinket.hidden ? `${trinket.emoji}***\`${trinket.name}\`*** \`#${trinket.id}\`**,** ` : `:question:\`???\` \`#${trinket.id}\`**,** `)}
 
     //If there are no trinkets of rarity, list "NOTHING". Otherwise, remove the last comma in the list
     if (tier1 === t1Header) { tier1 = tier1 + '`NOTHING!`'}

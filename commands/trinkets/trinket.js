@@ -22,7 +22,7 @@ export default {
             .addBooleanOption((visible) => (
                 visible
                 .setName('hidden'))
-                .setDescription('If true, command\'s output will not be visible to others'))
+                .setDescription('If true, command\'s output will not be visible to others. Allows viewing your own hidden trinkets'))
         ))
         //Trinket search by name command
         .addSubcommand((search) => (
@@ -182,7 +182,7 @@ async function create(interaction, config) {
         await Users.updateBalance(user.userId, user.guildId, -1*config.trinketT3Cost)
     }
 
-    await Trinkets.addTrinket(tier, name, emoji, image, lore, user.userId, guildId, interaction)
+    await Trinkets.addTrinket(tier, name, emoji, image, lore, user.userId, guildId, ephemeral, interaction)
     UpdateGachaChance(tier, interaction)
 
     embed.setTitle(`${config[`rarityNameT${tier}`]} trinket ${emoji}\`${name}\` successfully created!`)
@@ -192,14 +192,18 @@ async function create(interaction, config) {
 }
 
 async function view(interaction, config) {
-    const guildId = interaction.guild.id
     const id = interaction.options.getInteger('id')
     const ephemeral = interaction.options.getBoolean('hidden')
 
     let embed
     const trinket = await Trinkets.getTrinkets(id)
     if (trinket) {
-        embed = await display(trinket, interaction, config)
+        if (ephemeral && trinket.creatorId === interaction.user.id) { 
+            embed = await display(trinket, interaction, config, false) //If owner calls hidden view
+        } else {
+            embed = await display(trinket, interaction, config, trinket.hidden)
+        }
+        
     } else {
         embed = new EmbedBuilder().setTitle('oops')
     }
@@ -210,7 +214,7 @@ async function search(interaction, config) {
     
 }
 
-async function display(trinket, interaction, config) {
+async function display(trinket, interaction, config, hidden = false) {
     await interaction.guild.members.fetch() // Load guild members into cache
     const rarity = config[`rarityNameT${trinket.tier}`]
     const owner = trinket.ownerId.includes('gacha') ? '*The Gacha*' : interaction.client.users.cache.get(trinket.ownerId)
@@ -218,6 +222,13 @@ async function display(trinket, interaction, config) {
     const createdAt = `<t:${Date.parse(trinket.createdAt) / 1000}:f>`
     const updatedAt = `<t:${Date.parse(trinket.updatedAt) / 1000}:f>`
     
+    if (hidden) {
+        const embed = new EmbedBuilder()
+        .setColor(config.embedColor)
+        .setTitle(`${rarity} :question: ???`)
+        .setDescription(`secret :)`)
+        return embed
+    }
 
     const embed = new EmbedBuilder()
         .setColor(config.embedColor)
