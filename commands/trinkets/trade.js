@@ -96,7 +96,7 @@ async function handleTradeResponse(reply, interaction) {
         var button = await reply.awaitMessageComponent({ time: 300_000 })
     } catch (e) {
         //If trade times out
-        embed.setTitle(`Trade request to <@${target.id}> timed out after 5 minutes :(`)
+        embed.setTitle(`Trade request to ${target.displayName} timed out after 5 minutes :(`)
         interaction.editReply({embeds: [embed], components: [], content: ''})
         return null
     }
@@ -141,12 +141,16 @@ async function handleTradeResponse(reply, interaction) {
         }
     } 
     else {
+        if (button.user.id === user.id) {
+            button.reply({embeds: [embed.setTitle(`You can't accept your own trade!`)], ephemeral: true})
+        } else {
+            button.reply({embeds: [embed.setTitle(`yo hands off :rage:`)], ephemeral: true})
+        }
+        
         return await handleTradeResponse(reply, interaction)
     }
-    
-    return interaction.editReply({embeds: [embed], components: components, content: ''})
-
-    
+    button.deferUpdate()
+    return interaction.editReply({embeds: [embed], components: components, content: ''})    
 }
 
 //Add items to an existing trade
@@ -156,13 +160,18 @@ async function add(interaction) {
     const itemString = interaction.options.getString('items') ?? ''
     const items = itemString.replace(/\s/g, '').split(',')
     const trade = await interaction.client.trades.get(interaction.guild.id).find((t) => t.userId1 === user.id || t.userId2 === user.id)
+    const config = await Config.getConfig(interaction.guild.id)
 
     if (!trade) {
-        return `You have no trades active! Create one with \`/trade create\``
+        const embed = new EmbedBuilder()
+            .setColor(config.embedColor)
+            .setTitle(`You have no trades active! Create one with \`/trade create\``)
+        return {embeds: [embed], ephemeral: true}
     }
-    const whichUser = user.id === trade.userId1 ? 1 : 2
 
+    const whichUser = user.id === trade.userId1 ? 1 : 2
     let errors = ''
+
     //Trinkets
     for (const item of items) {
         if (!item) { continue }
@@ -193,11 +202,10 @@ async function add(interaction) {
     }
 
     //Edit trade window
-    const config = await Config.getConfig(interaction.guild.id)
     const message = await trade.reply.fetch()
     const tradeEmbed = message.embeds[0]
     let content = '`'
-    for (const field of tradeEmbed.fields) {
+    for (const field of tradeEmbed.fields) { //Each side of the trade is stored in an embed field, iterate to find the user's side then break
         if (field.name === user.displayName) {
             
             //Points
@@ -208,6 +216,7 @@ async function add(interaction) {
             for (const trinket of trade[`items${whichUser}`]) {
                 content += `${config[`rarityNameT${trinket.tier}`]} ${trinket.name} (ID ${trinket.id}), `
             }
+
             content = content.slice(0, -2)
             content += '`'
             field.value = content
@@ -224,6 +233,7 @@ async function add(interaction) {
     return {embeds: [embed], ephemeral: true}
 }
 
+//Handle everything regarding the trade window itself. User confirmation buttons, canceling, and confirming the trade
 async function handleTrade(reply, interaction) {
     const target = interaction.options.getUser('user')
     const user = interaction.user
@@ -259,47 +269,38 @@ async function handleTrade(reply, interaction) {
         try {
             var button = await reply.awaitMessageComponent({ time: 900_000 })
         } catch (e) {
-            embed.setTitle(`Trade between <@${user.id}> and <@${target.id}> timed out after 15 minutes :(`)
+            embed.setTitle(`Trade between ${user.displayName} and ${target.displayName} timed out after 15 minutes :(`)
             interaction.editReply({embeds: [embed], components: [], content: ''})
             return null
         }
 
-        //If trade sender presses their own button
-        if (button.user.id === user.id && button.customId === `ready${user.id}`)  {
+        //If either involved user presses their own button
+        if ((button.user.id === user.id && button.customId === `ready${user.id}`) || (button.user.id === target.id && button.customId === `ready${target.id}`))  {
             const components = reply.components
+            const customId = button.user.id === user.id ? `ready${user.id}` : `ready${target.id}`
             for (let c in components[0].components) {
                 const component = components[0].components[c]
-                if (component.customId === `ready${user.id}`) { //Find the matching ready button
-                    ready1 = component.style === ButtonStyle.Secondary ? true : false 
+                if (component.customId === customId) { //Find the matching ready button
+                    const ready = (component.style === ButtonStyle.Secondary)
+                    customId === `ready${user.id}` ? ready1 = ready : ready2 = ready
+
                     const newComponent = new ButtonBuilder()
                         .setLabel(component.label)
                         .setCustomId(component.customId)
                         .setStyle(component.style === ButtonStyle.Secondary ? ButtonStyle.Primary : ButtonStyle.Secondary) //Style is used for both state and visuals
                     components[0].components[c] = newComponent
                     reply = await reply.edit({components: [components[0]]})
-                    await button.reply({content: ready1 ? 'Readied!' : 'Unreadied...', ephemeral: true})
+                    button.deferUpdate()
                     break
                 }
             }
         } 
-        //If trade target presses their own button
-        else if (button.user.id === target.id && button.customId === `ready${target.id}`) {
-            const components = reply.components
-            for (let c in components[0].components) {
-                const component = components[0].components[c]
-                if (component.customId === `ready${target.id}`) { //Find the matching ready button
-                    ready2 = component.style === ButtonStyle.Secondary ? true : false 
-                    const newComponent = new ButtonBuilder()
-                        .setLabel(component.label)
-                        .setCustomId(component.customId)
-                        .setStyle(component.style === ButtonStyle.Secondary ? ButtonStyle.Primary : ButtonStyle.Secondary) //Style is used for both state and visuals
-                    components[0].components[c] = newComponent
-                    reply = await reply.edit({components: [components[0]]})
-                    await button.reply({content: ready2 ? 'Readied!' : 'Unreadied...', ephemeral: true})
-                    break
-                }
-            }
-        } 
+        else if ((button.user.id === user.id && button.customId === `ready${target.id}`) || (button.user.id === target.id && button.customId === `ready${user.id}`)) {
+            const embed = new EmbedBuilder()
+                .setColor(config.embedColor)
+                .setTitle('That\'s not your confirmation button :rage:')
+            button.reply({embeds: [embed], ephemeral: true})
+        }
         //If either involved user cancels
         else if ((button.user.id === target.id || button.user.id === user.id) && button.customId === `readyCancel`) {
             const embed = new EmbedBuilder()
@@ -336,7 +337,14 @@ async function handleTrade(reply, interaction) {
             await reply.edit({embeds: [embed], components: []})
             tradeComplete = true
         }
+        else {
+            const embed = new EmbedBuilder()
+                .setColor(config.embedColor)
+                .setTitle('yo hands off :rage:')
+            button.reply({embeds: [embed], ephemeral: true})
+        }
     }
+    //Remove the trade from the client's trades collection
     const index = trades.indexOf(trade)
     trades.splice(index, 1)
     interaction.client.trades.set(interaction.guild.id, trades)
