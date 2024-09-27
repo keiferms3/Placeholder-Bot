@@ -57,13 +57,18 @@ export default {
 
 //Create a new trade request
 async function create(interaction) {
+    const config = await Config.getConfig(interaction.guild.id) 
     const target = interaction.options.getUser('user')
     const trade = await interaction.client.trades.get(interaction.guild.id).find((t) => t.userId1 === interaction.user.id || t.userId2 === interaction.user.id)
     if (trade) {
-        return {content: `One or both users are already in an active trade, try again later`, ephemeral: true}
+        const message = await trade.reply.fetch()
+        const embed = new EmbedBuilder()
+            .setColor(config.embedColor)
+            .setTitle(`:x: One or both users are already in an active trade, try again later :x:`)
+            .setDescription(`${message.url}`)
+        return {embeds: [embed], ephemeral: true}
     }
 
-    const config = await Config.getConfig(interaction.guild.id) 
     const buttons = new ActionRowBuilder()
         .addComponents(
             new ButtonBuilder()
