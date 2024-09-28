@@ -123,28 +123,32 @@ export async function viewGacha(interaction) {
     const chances = interaction.client.gachaChances.get(interaction.guild.id)
     const trinkets = await Trinkets.getTrinkets(undefined, interaction.guild.id)
 
-    const t1Header = `**--- ${config.rarityNameT1} Trinkets ---**\n`
-    const t2Header = `**--- ${config.rarityNameT2} Trinkets ---**\n`
-    const t3Header = `**--- ${config.rarityNameT3} Trinkets ---**\n`
-    let tier1 = t1Header
-    let tier2 = t2Header
-    let tier3 = t3Header
+    const tier1 = trinkets.filter(t => t.ownerId === 'gacha1')
+    const tier2 = trinkets.filter(t => t.ownerId === 'gacha2')
+    const tier3 = trinkets.filter(t => t.ownerId === 'gacha3')
+
+    const t1Header = `**--- ${config.rarityNameT1} Trinkets ---** \`(${tier1.length})\`\n`
+    const t2Header = `**--- ${config.rarityNameT2} Trinkets ---** \`(${tier2.length})\`\n`
+    const t3Header = `**--- ${config.rarityNameT3} Trinkets ---** \`(${tier3.length})\`\n`
+    let tier1Str = t1Header
+    let tier2Str = t2Header
+    let tier3Str = t3Header
 
     //List trinkets of each rarity
-    for (const trinket of trinkets.filter(t => t.ownerId === 'gacha1')) { tier1 = tier1 + (!trinket.hidden ? `${trinket.emoji}\`${trinket.name}\` \`#${trinket.id}\`**,** ` : `:question:\`???\` \`#${trinket.id}\`**,** `)}
-    for (const trinket of trinkets.filter(t => t.ownerId === 'gacha2')) { tier2 = tier2 + (!trinket.hidden ? `${trinket.emoji}**\`${trinket.name}\`** \`#${trinket.id}\`**,** ` : `:question:\`???\` \`#${trinket.id}\`**,** `)}
-    for (const trinket of trinkets.filter(t => t.ownerId === 'gacha3')) { tier3 = tier3 + (!trinket.hidden ? `${trinket.emoji}***\`${trinket.name}\`*** \`#${trinket.id}\`**,** ` : `:question:\`???\` \`#${trinket.id}\`**,** `)}
+    for (const trinket of tier1) { tier1Str = tier1Str + (!trinket.hidden ? `${trinket.emoji}\`${trinket.name}\` \`#${trinket.id}\`**,** ` : `:question:\`???\` \`#${trinket.id}\`**,** `)}
+    for (const trinket of tier2) { tier2Str = tier2Str + (!trinket.hidden ? `${trinket.emoji}**\`${trinket.name}\`** \`#${trinket.id}\`**,** ` : `:question:\`???\` \`#${trinket.id}\`**,** `)}
+    for (const trinket of tier3) { tier3Str = tier3Str + (!trinket.hidden ? `${trinket.emoji}***\`${trinket.name}\`*** \`#${trinket.id}\`**,** ` : `:question:\`???\` \`#${trinket.id}\`**,** `)}
 
     //If there are no trinkets of rarity, list "NOTHING". Otherwise, remove the last comma in the list
-    if (tier1 === t1Header) { tier1 = tier1 + '`NOTHING!`'}
-    else { tier1 = tier1.substring(0, tier1.lastIndexOf('**,**')) }
-    if (tier2 === t2Header) { tier2 = tier2 + '`NOTHING!`'}
-    else { tier2 = tier2.substring(0, tier2.lastIndexOf('**,**')) }
-    if (tier3 === t3Header) { tier3 = tier3 + '`NOTHING!`'}
-    else { tier3 = tier3.substring(0, tier3.lastIndexOf('**,**')) }
+    if (tier1Str === t1Header) { tier1Str = tier1Str + '`NOTHING!`'}
+    else { tier1Str = tier1Str.substring(0, tier1Str.lastIndexOf('**,**')) }
+    if (tier2Str === t2Header) { tier2Str = tier2Str + '`NOTHING!`'}
+    else { tier2Str = tier2Str.substring(0, tier2Str.lastIndexOf('**,**')) }
+    if (tier3Str === t3Header) { tier3Str = tier3Str + '`NOTHING!`'}
+    else { tier3Str = tier3Str.substring(0, tier3Str.lastIndexOf('**,**')) }
     
     //TODO: Fix embed description getting cut off if it gets too long. Divide description into multiple embeds if approx 1300 chars long
-    let description = `${config.rarityNameT1} Chance: \`${chances.get(1)}%\`\n${config.rarityNameT2} Chance: \`${chances.get(2)}%\`\n${config.rarityNameT3} Chance: \`${chances.get(3)}%\`\n\n${tier3}\n\n${tier2}\n\n${tier1}`
+    let description = `${config.rarityNameT1} Chance: \`${chances.get(1)}%\`\n${config.rarityNameT2} Chance: \`${chances.get(2)}%\`\n${config.rarityNameT3} Chance: \`${chances.get(3)}%\`\n\n${tier3Str}\n\n${tier2Str}\n\n${tier1Str}`
     let embed = new EmbedBuilder()
             .setColor(config.embedColor)
             .setTitle(`:mag_right: Trinket Roll Information :mag:`)
@@ -152,7 +156,7 @@ export async function viewGacha(interaction) {
     await interaction.reply({embeds: [embed]})
 }
 
-export async function forgeReward(trinket, interaction) {
+export async function forgeReward(trinket, interaction, updateBal = true) {
     const config = await Config.getConfig(interaction.guild.id)
     const creator = await Users.getUser(trinket.creatorId, interaction.guild.id)
 
@@ -163,6 +167,9 @@ export async function forgeReward(trinket, interaction) {
     }
     interest = Math.ceil(interest)
 
-    Users.updateBalance(creator.userId, creator.guildId, interest)
+    if (updateBal) { //If updateBal is false, this function can be used to just calculate the reward value
+        Users.updateBalance(creator.userId, creator.guildId, interest)
+    }
+    
     return interest
 }
