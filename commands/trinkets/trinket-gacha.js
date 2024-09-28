@@ -104,7 +104,7 @@ export async function rollGacha(interaction) {
         const reward = await forgeReward(trinket, interaction) //Give trinket creator point reward
         
         await interaction.guild.members.fetch() //Load all guild users into cache
-        embed.setTitle(`:white_check_mark: ${interaction.user.displayName} got ${config[`rarityNameT${trinket.tier}`]} ${trinket.emoji}\`${trinket.name}\` \`(ID ${trinket.id})\` :white_check_mark: `)
+        embed.setTitle(`:white_check_mark: ${interaction.user.displayName} got ${trinket.hidden ? 'Hidden ':''}${config[`rarityNameT${trinket.tier}`]} ${trinket.emoji}\`${trinket.name}\` \`(ID ${trinket.id})\` :white_check_mark: `)
              .setDescription(`Created by ${interaction.client.users.cache.get(trinket.creatorId) ?? 'Unknown'} on <t:${Date.parse(trinket.createdAt) / 1000}:f>\n\n${trinket.description ?? ''}`)
              .setImage(trinket.image)
         const rewardEmbed = new EmbedBuilder()
@@ -143,6 +143,7 @@ export async function viewGacha(interaction) {
     if (tier3 === t3Header) { tier3 = tier3 + '`NOTHING!`'}
     else { tier3 = tier3.substring(0, tier3.lastIndexOf('**,**')) }
     
+    //TODO: Fix embed description getting cut off if it gets too long. Divide description into multiple embeds if approx 1300 chars long
     let description = `${config.rarityNameT1} Chance: \`${chances.get(1)}%\`\n${config.rarityNameT2} Chance: \`${chances.get(2)}%\`\n${config.rarityNameT3} Chance: \`${chances.get(3)}%\`\n\n${tier3}\n\n${tier2}\n\n${tier1}`
     let embed = new EmbedBuilder()
             .setColor(config.embedColor)
