@@ -150,7 +150,7 @@ export async function forgeReward(trinket, interaction) {
     const creator = await Users.getUser(trinket.creatorId, interaction.guild.id)
 
     const days = (Date.parse(trinket.updatedAt) - Date.parse(trinket.createdAt)) / (1000 * 3600 * 24)
-    let interest = config[`trinketCostT${trinket.tier}`]
+    let interest = (config[`trinketCostT${trinket.tier}`] * config.forgeRewardRatio)
     for (let i = 0; i < Math.floor(days); i++) {
         interest += interest * config[`forgeRewardDailyT${trinket.tier}`]
     }
