@@ -3,8 +3,8 @@ import { Config, Trinkets, Users } from "../../database/objects.js"
 import { random, sleep, UpdateGachaChance } from "../../helpers.js"
 
 export async function displayGacha(interaction) {
-    const ephemeral = interaction.options.getBoolean('hidden')
     const config = await Config.getConfig(interaction.guild.id)
+    const ephemeral = interaction.options.getBoolean('hidden')
     const embed = new EmbedBuilder()
         .setColor(config.embedColor)
         .setTitle(`:tickets: Trinket Roulette :tickets:`)
@@ -90,17 +90,18 @@ export async function rollGacha(interaction) {
     await animationDone
 
     //Handle result
-    if (trinket === null) {
+    if (trinket === null) { //Roll failed
         embed.setTitle(`:x: ${interaction.user.displayName} got NOTHING!! :x:`)
-    } else if (trinket === undefined) {
+    } else if (trinket === undefined) { //No trinkets in gacha
         embed.setTitle(`There are no trinkets left in the gacha!`)
              .setDescription(`Roll has been refunded`)
         Users.updateBalance(user.userId, user.guildId, config.gachaRollCost)
-    } else {
+    } else { //Successful roll, reward trinket
         trinket.ownerId = user.userId
         trinket.hidden = false
         await trinket.save()
-        await UpdateGachaChance(trinket.tier, interaction)
+        await UpdateGachaChance(trinket.tier, interaction) //Update gacha changes to reflect new trinket count
+        await forgeReward(trinket, interaction) //Give trinket creator point reward
         
         await interaction.guild.members.fetch() //Load all guild users into cache
         embed.setTitle(`:white_check_mark: ${interaction.user.displayName} got ${config[`rarityNameT${trinket.tier}`]} ${trinket.emoji}\`${trinket.name}\` \`(ID ${trinket.id})\` :white_check_mark: `)
@@ -142,4 +143,19 @@ export async function viewGacha(interaction) {
             .setTitle(`:mag_right: Trinket Roll Information :mag:`)
             .setDescription(description)
     await interaction.reply({embeds: [embed]})
+}
+
+export async function forgeReward(trinket, interaction) {
+    const config = await Config.getConfig(interaction.guild.id)
+    const creator = await Users.getUser(trinket.creatorId, interaction.guild.id)
+
+    const days = (Date.parse(trinket.updatedAt) - Date.parse(trinket.createdAt)) / (1000 * 3600 * 24)
+    let interest = config[`trinketCostT${trinket.tier}`]
+    for (let i = 0; i < Math.floor(days); i++) {
+        interest += interest * config[`forgeRewardDailyT${trinket.tier}`]
+    }
+    interest = Math.ceil(interest)
+
+    Users.updateBalance(creator.userId, creator.guildId, interest)
+    return interest
 }

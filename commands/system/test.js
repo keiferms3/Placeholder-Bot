@@ -1,4 +1,6 @@
 import { SlashCommandBuilder } from "discord.js"
+import { forgeReward } from "../trinkets/trinket-gacha.js"
+import { Trinkets } from "../../database/objects.js"
 
 export default {
     data: new SlashCommandBuilder()
@@ -11,5 +13,12 @@ export default {
 }
 
 async function test(interaction) {
-    return `What's up ${interaction.user.displayName}`
+    const trinkets = await Trinkets.getTrinkets(undefined, interaction.guild.id)
+    for (let trinket of trinkets) {
+        if (!trinket.ownerId.startsWith('gacha')) {
+            await forgeReward(trinket, interaction)
+        }
+    }
+    return 'FORGEMASTERS BE BLESSED!'
+    
 }

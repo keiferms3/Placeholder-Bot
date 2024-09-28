@@ -25,19 +25,19 @@ export default (database, DataTypes) => {
             defaultValue: '#853fb5',
             allowNull: false,
         },
-        trinketT1Cost: {
+        trinketCostT1: {
             type: DataTypes.INTEGER,
-            defaultValue: 50,
+            defaultValue: 20,
             allowNull: false,
         },
-        trinketT2Cost: {
+        trinketCostT2: {
             type: DataTypes.INTEGER,
-            defaultValue: 200,
+            defaultValue: 100,
             allowNull: false,
         },
-        trinketT3Cost: {
+        trinketCostT3: {
             type: DataTypes.INTEGER,
-            defaultValue: 500,
+            defaultValue: 300,
             allowNull: false,
         },
         eightBallCost: {
@@ -93,6 +93,36 @@ export default (database, DataTypes) => {
         rarityNameT3: {
             type: DataTypes.STRING,
             defaultValue: 'Legendary',
+            allowNull: false,
+        },
+        forgeRewardRatio: {
+            type: DataTypes.DOUBLE,
+            defaultValue: 1.0,
+            allowNull: false,
+        },
+        forgeRewardDailyT1: {
+            type: DataTypes.DOUBLE,
+            defaultValue: 0.1,
+            allowNull: false,
+        },
+        forgeRewardDailyT2: {
+            type: DataTypes.DOUBLE,
+            defaultValue: 0.05,
+            allowNull: false,
+        },
+        forgeRewardDailyT3: {
+            type: DataTypes.DOUBLE,
+            defaultValue: 0.03,
+            allowNull: false,
+        },
+        returnReward: {
+            type: DataTypes.DOUBLE,
+            defaultValue: 1.0,
+            allowNull: false,
+        },
+        destroyCost: {
+            type: DataTypes.DOUBLE,
+            defaultValue: 1.0,
             allowNull: false,
         },
    }, {

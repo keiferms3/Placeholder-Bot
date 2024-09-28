@@ -161,25 +161,25 @@ async function create(interaction, config) {
     //Check balances, deduct points, and create trinket
     const user = await Users.getUser(interaction.user.id, guildId)
     if (tier === 1) {
-        if (user.points < config.trinketT1Cost) {
-            embed.setDescription(`${config.rarityNameT1} trinkets require \`${config.trinketT1Cost} PP\`, you have \`${user.points} PP\``)
+        if (user.points < config.trinketCostT1) {
+            embed.setDescription(`${config.rarityNameT1} trinkets require \`${config.trinketCostT1} PP\`, you have \`${user.points} PP\``)
             return {embeds: [embed]}
         }
-        await Users.updateBalance(user.userId, user.guildId, -1*config.trinketT1Cost)
+        await Users.updateBalance(user.userId, user.guildId, -1*config.trinketCostT1)
     }
     else if (tier === 2) {
-        if (user.points < config.trinketT2Cost) {
-            embed.setDescription(`${config.rarityNameT2} trinkets require \`${config.trinketT2Cost} PP\`, you have \`${user.points} PP\``)
+        if (user.points < config.trinketCostT2) {
+            embed.setDescription(`${config.rarityNameT2} trinkets require \`${config.trinketCostT2} PP\`, you have \`${user.points} PP\``)
             return {embeds: [embed]}
         }
-        await Users.updateBalance(user.userId, user.guildId, -1*config.trinketT2Cost)
+        await Users.updateBalance(user.userId, user.guildId, -1*config.trinketCostT2)
     }
     else if (tier === 3) {
-        if (user.points < config.trinketT3Cost) {
-            embed.setDescription(`${config.rarityNameT3} trinkets require \`${config.trinketT3Cost} PP\`, you have \`${user.points} PP\``)
+        if (user.points < config.trinketCostT3) {
+            embed.setDescription(`${config.rarityNameT3} trinkets require \`${config.trinketCostT3} PP\`, you have \`${user.points} PP\``)
             return {embeds: [embed]}
         }
-        await Users.updateBalance(user.userId, user.guildId, -1*config.trinketT3Cost)
+        await Users.updateBalance(user.userId, user.guildId, -1*config.trinketCostT3)
     }
 
     const trinket = await Trinkets.addTrinket(tier, name, emoji, image, lore, user.userId, guildId, ephemeral, interaction)

@@ -19,7 +19,7 @@ async function shop(interaction) {
             .setTitle('💰 Shop List 💰')
             .addFields({
                 name: '🏆 Trinkets 🏆',
-                value: `\`Create ${config.rarityNameT1}\` | \`${config.trinketT1Cost} PP\`\n\`Create ${config.rarityNameT2}\` | \`${config.trinketT2Cost} PP\`\n\`Create ${config.rarityNameT3}\` | \`${config.trinketT3Cost} PP\``,
+                value: `\`Create ${config.rarityNameT1}\` | \`${config.trinketCostT1} PP\`\n\`Create ${config.rarityNameT2}\` | \`${config.trinketCostT2} PP\`\n\`Create ${config.rarityNameT3}\` | \`${config.trinketCostT3} PP\``,
               }, 
             //   {
             //     name: '✉️ Messages ✉️',

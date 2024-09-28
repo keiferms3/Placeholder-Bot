@@ -5,6 +5,7 @@ const UsersObj = UsersModel
 
 UsersObj.updateBalance = async function (uid, gid, pointVal) {
     try {
+        pointVal = Math.floor(pointVal)
         const user = await UsersObj.findOne({ where: { userId: uid, guildId: gid }})
         let pointBal = user.points + pointVal
         let pointDifference = pointVal
