@@ -142,7 +142,7 @@ async function create(interaction, config) {
         .setTitle(`:x: Failed to create trinket :x:`)
     
     //Validation
-    if (!(emojiString.match(emojiRegex()) || emoji.match(/<:.+?:\d+>$/))) { //This custom emote regex is a shitty solution, it doesn't stop emotes from other servers and matches with invalid emotes (eg <:slurslurslurs:1>)
+    if (!(emojiString.match(emojiRegex()) || emojiString.match(/<:.+?:\d+>$/))) { //This custom emote regex is a shitty solution, it doesn't stop emotes from other servers and matches with invalid emotes (eg <:slurslurslurs:1>)
         return embed.setDescription(`Invalid emoji`)                  //There is a way to check if the bot can use the emote but, I'm too lazy and this is a private bot. Fuck you whoever inevitably makes me fix this :(   
     } else if (!(image === null || checkImageUrl(image))) {
         return embed.setDescription(`Invalid image URL. Make sure you are directly linking the image`)
@@ -156,7 +156,7 @@ async function create(interaction, config) {
     } else if (image && image.length > 512) { //1840 characters max user input, so we should never hit the 2000 limit if this info ever gets sent as a raw message
         return embed.setDescription(`Image URL has a character limit of 512. Your URL was ${image.length} characters long`)
     }
-    const emoji = emojiString.match(emojiRegex())[0]
+    const emoji = emojiString.match(emojiRegex()) ? emojiString.match(emojiRegex())[0] : emojiString
 
     //Check balances, deduct points, and create trinket
     const user = await Users.getUser(interaction.user.id, guildId)
