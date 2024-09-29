@@ -25,11 +25,6 @@ export default (database, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: true,
         },
-        hidden: {
-            type: DataTypes.BOOLEAN,
-            allowNull: false,
-            defaultValue: false,
-        },
         ownerId: {
             type: DataTypes.STRING,
             allowNull: true,
@@ -41,6 +36,16 @@ export default (database, DataTypes) => {
         guildId: {
             type: DataTypes.STRING,
             allowNull: false,
+        },
+        hidden: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false,
+        },
+        returned: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false,
         },
    }, {
         timestamps: true,

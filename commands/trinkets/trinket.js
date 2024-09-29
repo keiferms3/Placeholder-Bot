@@ -198,6 +198,7 @@ async function view(interaction) {
 
     let embed
     const trinket = await Trinkets.getTrinkets(id)
+    console.log(trinket)
     if (trinket) {
         if (ephemeral && trinket.creatorId === interaction.user.id) { 
             embed = await display(trinket, interaction, config, false) //If owner calls hidden view
@@ -254,8 +255,10 @@ async function trinketReturn(interaction) {
 
         const buttonId = button.customId
         if (buttonId === 'returnConfirm') {
+            //Trinkets.update({ ownerId: `gacha${trinket.tier}` }, {where: { id: trinket.id }})
             trinket.ownerId = `gacha${trinket.tier}`
-            trinket.save()
+            trinket.returned = true
+            trinket.save() //Fix updatedAt
             embed.setTitle(`:white_check_mark: ${interaction.user.displayName} returned ${config[`rarityNameT${trinket.tier}`]} ${trinket.emoji}\`${trinket.name}\` \`(ID ${trinket.id})\` to the gacha! :white_check_mark:`)
                  .setDescription(`\`${config[`trinketCostT${trinket.tier}`]} PP\` added to balance`)
                  Users.updateBalance(interaction.user.id, interaction.guild.id, config[`trinketCostT${trinket.tier}`])

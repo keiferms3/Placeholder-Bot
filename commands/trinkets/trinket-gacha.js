@@ -97,6 +97,7 @@ export async function rollGacha(interaction) {
              .setDescription(`Roll has been refunded`)
         Users.updateBalance(user.userId, user.guildId, config.gachaRollCost)
     } else { //Successful roll, reward trinket
+        const embeds = []
         trinket.ownerId = user.userId
         trinket.hidden = false
         await trinket.save()
@@ -107,11 +108,15 @@ export async function rollGacha(interaction) {
         embed.setTitle(`:white_check_mark: ${interaction.user.displayName} got ${trinket.hidden ? 'Hidden ':''}${config[`rarityNameT${trinket.tier}`]} ${trinket.emoji}\`${trinket.name}\` \`(ID ${trinket.id})\` :white_check_mark: `)
              .setDescription(`Created by ${interaction.client.users.cache.get(trinket.creatorId) ?? 'Unknown'} on <t:${Date.parse(trinket.createdAt) / 1000}:f>\n\n${trinket.description ?? ''}`)
              .setImage(trinket.image)
-        const rewardEmbed = new EmbedBuilder()
-            .setColor(config.embedColor)
-            .setTitle(`Forgemaster ${(interaction.client.users.cache.get(trinket.creatorId)).displayName ?? 'Unknown'} got \`${reward} PP\``)
+        embeds.push(embed)
+        if (reward !== -1) {
+            const rewardEmbed = new EmbedBuilder()
+                .setColor(config.embedColor)
+                .setTitle(`Forgemaster ${(interaction.client.users.cache.get(trinket.creatorId)).displayName ?? 'Unknown'} got \`${reward} PP\``)
+            embeds.push(rewardEmbed)
+        }
 
-        await interaction.editReply({embeds: [embed, rewardEmbed]})
+        await interaction.editReply({embeds: embeds})
         return
     }
     await interaction.editReply({embeds: [embed]})
@@ -149,11 +154,23 @@ export async function viewGacha(interaction) {
     
     //TODO: Fix embed description getting cut off if it gets too long. Divide description into multiple embeds if approx 1300 chars long
     let description = `${config.rarityNameT1} Chance: \`${chances.get(1)}%\`\n${config.rarityNameT2} Chance: \`${chances.get(2)}%\`\n${config.rarityNameT3} Chance: \`${chances.get(3)}%\`\n\n${tier3Str}\n\n${tier2Str}\n\n${tier1Str}`
-    let embed = new EmbedBuilder()
-            .setColor(config.embedColor)
-            .setTitle(`:mag_right: Trinket Roll Information :mag:`)
-            .setDescription(description)
-    await interaction.reply({embeds: [embed]})
+    const chunkCount = Math.ceil(description.length / 1300)
+    const embeds = []
+    let index = 0
+    for (let i = 0; i < chunkCount; i++) {
+        const lastIndex = index
+        index = description.indexOf('**,** ', (i+1)*1300) 
+        index = (index === -1) ? (i+1)*1300 : index + 5
+
+        const embed = new EmbedBuilder().setColor(config.embedColor)
+        if (i === 0) {
+            embed.setTitle(`:mag_right: Trinket Roll Information :mag:`)
+        }
+        embed.setDescription(description.substring(lastIndex, index))
+        embeds.push(embed)
+    }
+
+    await interaction.reply({embeds: embeds})
 }
 
 export async function forgeReward(trinket, interaction, updateBal = true) {
@@ -167,6 +184,9 @@ export async function forgeReward(trinket, interaction, updateBal = true) {
     }
     interest = Math.ceil(interest)
 
+    if (trinket.returned) {
+        return -1
+    }
     if (updateBal) { //If updateBal is false, this function can be used to just calculate the reward value
         Users.updateBalance(creator.userId, creator.guildId, interest)
     }
