@@ -29,26 +29,26 @@ async function pay(interaction) {
         const points = interaction.options.getInteger('points')
         
         const config = await Config.getConfig(guild.id)
-        const Top = await Users.getUser(user.id, guild.id)
-        const Bottom = await Users.getUser(targetUser.id, guild.id)
+        const User = await Users.getUser(user.id, guild.id)
+        const Target = await Users.getUser(targetUser.id, guild.id)
         const embed = new EmbedBuilder()
             .setColor(config.embedColor)
 
         if (points < 0) {
             embed.setTitle(`:x: You cannot pay negative amounts :x:`)
-                 .setDescription(`Kill yourself ryan`)
+                 .setDescription(`Have a fantastic day ryan!`)
         }
-        else if (Top.points < points) {
+        else if (User.points < points) {
             embed.setTitle(`:x: You do not have enough points :x:`)
-                 .setDescription(`Cannot pay \`${points} PP\`, \`${user.displayName}\` only has \`${Top.points} PP\``)
+                 .setDescription(`Cannot pay \`${points} PP\`, \`${user.displayName}\` only has \`${User.points} PP\``)
 
-        } else if (config.maxPoints > -1 && (Bottom.points + points) > config.maxPoints) {
-            embed.setTitle(`:x: Recipient cannot take such a large load :x:`)
+        } else if (config.maxPoints > -1 && (Target.points + points) > config.maxPoints) {
+            embed.setTitle(`:x: Recipient's wallet is full! :x:`)
                  .setDescription(`This transaction would exceed the \`${config.maxPoints} PP\` max limit`)
 
         } else {
-            Users.updateBalance(Top.userId, Top.guildId, (points * -1))
-            Users.updateBalance(Bottom.userId, Bottom.guildId, points)
+            Users.updateBalance(User.userId, User.guildId, (points * -1))
+            Users.updateBalance(Target.userId, Target.guildId, points)
             
             embed.setTitle(`:white_check_mark: Payment successful! :white_check_mark:`)
                  .setDescription(`\`${user.displayName}\` paid \`${targetUser.displayName}\` \`${points} PP\``)
