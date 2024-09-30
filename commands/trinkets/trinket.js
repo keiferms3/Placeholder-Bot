@@ -412,7 +412,7 @@ async function list(interaction) {
 
     while (true) { //Bad practice? maybe... but it terminates after 15 minutes of inactivity so whatevahhh there's a base case
         try {
-            var button = await reply.awaitMessageComponent({ time: 900_000 })
+            var button = await reply.awaitMessageComponent({ time: 300_000 })
         } catch { //Catches on timeout
             reply.edit({embeds: [embed], components: []})
             return
