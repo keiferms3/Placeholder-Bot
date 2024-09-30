@@ -422,7 +422,7 @@ async function list(interaction) {
         }
 
         //Update active page
-        if (awaitButton.customId === 'listForward') {
+        if (button.customId === 'listForward') {
             (pageNum < pages.length) ? pageNum += 1 : pageNum = 1
         } else { //listBack
             (pageNum > 1) ? pageNum -= 1 : pageNum = pages.length
@@ -441,7 +441,7 @@ async function list(interaction) {
              .setFooter({text: `Page ${pageNum} / ${pages.length}`})
 
         reply.edit({embeds: [embed]})
-        awaitButton.deferUpdate()
+        button.deferUpdate()
     }
 }
 
