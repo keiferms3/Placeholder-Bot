@@ -6,7 +6,7 @@ export const Users = UsersObj
 export const Config = ConfigObj
 export const Trinkets = TrinketsObj
 
-export class Trade {
+export class Trade { //Why didn't I just create two TradeUser classes so we don't need to do this goofy thing1 thing2 stuff?? :sob:
     constructor(reply, uid1, uid2, gid) {
         this.reply = reply //Stores a reference to the message with the trade window
         this.userId1 = uid1

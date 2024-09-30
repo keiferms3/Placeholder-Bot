@@ -28,6 +28,7 @@ TrinketsObj.addTrinket = async function (tier, name, emoji, image, description, 
 //Retrieve trinket(s) by IDs provided
 TrinketsObj.getTrinkets = async function (id = undefined, guildId = undefined, ownerId = undefined, creatorId = undefined) {
     try {
+        //gross function... smelly function.... most of these model object functions are kinda stinky ngl
         if (id) {
             return await TrinketsObj.findOne({ where: {id: id}})
         } else if (ownerId && guildId) {

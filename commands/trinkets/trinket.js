@@ -1,7 +1,7 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, SlashCommandBuilder } from "discord.js"
 import { Config, Trinkets, Users } from "../../database/objects.js"
 import emojiRegex from "emoji-regex-xs"
-import { UpdateGachaChance } from "../../helpers.js"
+import { clamp, UpdateGachaChance } from "../../helpers.js"
 import { displayGacha } from "./trinket-gacha.js"
 
 export default {
@@ -51,6 +51,39 @@ export default {
                 .setName('hidden'))
                 .setDescription('If true, command\'s output will not be visible to others'))
         ))
+        //Trinket return subcommand
+        .addSubcommand((scrap) => (
+            scrap
+            .setName('return')
+            .setDescription('Return a trinket to the gacha for its creation value')
+            .addIntegerOption((int) => (
+                int
+                .setName('id')
+                .setDescription('Trinket\'s unique ID number')
+                .setRequired(true)
+            ))
+        ))
+        .addSubcommand((list) => (
+            list
+            .setName('list')
+            .setDescription('View a list of all trinkets')
+            .addIntegerOption((int) => (
+                int
+                .setName('page')
+                .setDescription('Jump to a certain page (25 trinkets per page)')
+            ))
+            .addUserOption((user) => (
+                user
+                .setName('createdby')
+                .setDescription('Filter trinkets by creator')
+            ))
+            .addIntegerOption((int) => (
+                int
+                .setName('rarity')
+                .setDescription('Filter trinkets by rarity')
+                .addChoices([{name: 'Common', value: 1}, {name: 'Rare', value: 2}, {name: 'Legendary', value: 3}])
+            ))
+        ))
         //Trinket creation command
         .addSubcommand((create) => (
             create
@@ -95,18 +128,6 @@ export default {
                 visible
                 .setName('hidden'))
                 .setDescription('If true, command\'s output will not be visible to others'))
-        ))
-        //Trinket return subcommand
-        .addSubcommand((scrap) => (
-            scrap
-            .setName('return')
-            .setDescription('Return a trinket to the gacha for its creation value')
-            .addIntegerOption((int) => (
-                int
-                .setName('id')
-                .setDescription('Trinket\'s unique ID number')
-                .setRequired(true)
-            ))
         )),
     async execute(interaction) {
         try {
@@ -124,9 +145,12 @@ export default {
                 var response = await search(interaction)
             } 
             else if (command === 'return') {
-                var response = await trinketReturn(interaction)
+                await trinketReturn(interaction)
                 return
-            } 
+            } else if (command === 'list') {
+                await list(interaction)
+                return
+            }
             else {
                 var response = `Tinket command "\`${command}\`" not found`
             }
@@ -198,7 +222,6 @@ async function view(interaction) {
 
     let embed
     const trinket = await Trinkets.getTrinkets(id)
-    console.log(trinket)
     if (trinket) {
         if (ephemeral && trinket.creatorId === interaction.user.id) { 
             embed = await display(trinket, interaction, config, false) //If owner calls hidden view
@@ -251,14 +274,19 @@ async function trinketReturn(interaction) {
     const reply = await interaction.reply({embeds: [embed], components: components, ephemeral: true})
 
     if(buttons) {
-        const button = await reply.awaitMessageComponent({ time: 300_000 })
+        try {
+            var button = await reply.awaitMessageComponent({ time: 300_000 })
+        } catch {
+            embed.setTitle(`Return request timed out after 5 minutes`)
+            reply.editReply({embeds: [embed], components: [], content: ''})
+            return
+        }
 
         const buttonId = button.customId
         if (buttonId === 'returnConfirm') {
-            //Trinkets.update({ ownerId: `gacha${trinket.tier}` }, {where: { id: trinket.id }})
             trinket.ownerId = `gacha${trinket.tier}`
             trinket.returned = true
-            trinket.save() //Fix updatedAt
+            trinket.save()
             embed.setTitle(`:white_check_mark: ${interaction.user.displayName} returned ${config[`rarityNameT${trinket.tier}`]} ${trinket.emoji}\`${trinket.name}\` \`(ID ${trinket.id})\` to the gacha! :white_check_mark:`)
                  .setDescription(`\`${config[`trinketCostT${trinket.tier}`]} PP\` added to balance`)
                  Users.updateBalance(interaction.user.id, interaction.guild.id, config[`trinketCostT${trinket.tier}`])
@@ -269,23 +297,21 @@ async function trinketReturn(interaction) {
             await reply.edit({embeds: [embed], components: []})
         }
     }
-    
-
 }
 
 async function display(trinket, interaction, config, hidden = false) {
     await interaction.guild.members.fetch() // Load guild members into cache
     const rarity = config[`rarityNameT${trinket.tier}`]
-    const owner = trinket.ownerId.includes('gacha') ? '*The Gacha*' : interaction.client.users.cache.get(trinket.ownerId)
+    const owner = trinket.ownerId.includes('gacha') ? '*The Gacha*' : interaction.client.users.cache.get(trinket.ownerId) ?? 'Unknown'
     const creator = interaction.client.users.cache.get(trinket.creatorId) ?? 'Unknown'
     const createdAt = `<t:${Date.parse(trinket.createdAt) / 1000}:f>`
     const updatedAt = `<t:${Date.parse(trinket.updatedAt) / 1000}:f>`
-    
+
     if (hidden) {
         const embed = new EmbedBuilder()
         .setColor(config.embedColor)
-        .setTitle(`${rarity} :question: ???`)
-        .setDescription(`secret :)`)
+        .setTitle(`${rarity} :question: \`???\``)
+        .setDescription(`ID: \`${trinket.id}\`\nCreated By: ${creator} on ${createdAt}\n\nsecret :)`)
         return embed
     }
 
@@ -298,9 +324,98 @@ async function display(trinket, interaction, config, hidden = false) {
     return embed
 }
 
+async function list(interaction) {
+    await interaction.guild.members.fetch() // Load guild members into cache
+    let pageNum = interaction.options.getInteger('page') ?? 1
+    const createdBy = interaction.options.getUser('createdby')
+    const tier = interaction.options.getInteger('rarity')
+    const config = await Config.getConfig(interaction.guild.id)
+
+    let trinkets = await Trinkets.getTrinkets(undefined, interaction.guild.id, undefined, createdBy?.id ?? undefined) //Handles filtering by creator
+    const pageLen = 25
+    const pages = []
+
+    //If tier is specified filter by tier
+    if (tier) {
+        trinkets = trinkets.filter(t => t.tier === tier)
+    }
+
+    //Divide full trinket list into page sized subarrays
+    for (let i = 0; i < trinkets.length; i += pageLen) {
+        const page = trinkets.slice(i, i + pageLen)
+        pages.push(page)
+    }
+
+    //Starting page validation
+    pageNum = clamp(pageNum, 1, pages.length)
+
+    const embed = new EmbedBuilder()
+        .setColor(config.embedColor)
+        .setTitle(`:card_box: Trinket List :card_box:`)
+        .setFooter({text: `Page ${pageNum} / ${pages.length}`})
+    const components = new ActionRowBuilder()
+        .setComponents(
+            new ButtonBuilder()
+                .setCustomId('listBack')
+                .setLabel('◀ Previous Page')
+                .setStyle(ButtonStyle.Secondary),
+            new ButtonBuilder()
+                .setCustomId('listForward')
+                .setLabel('Next Page ▶')
+                .setStyle(ButtonStyle.Secondary)
+        )
+
+    //Render the first page
+    
+    if (pages.length > 0) {
+        let content = ''
+        for (const trinket of pages[pageNum - 1]) {
+            const owner = interaction.client.users.cache.get(trinket.ownerId)
+            const styling = (trinket.tier > 1) ? (trinket.tier > 2) ? '***' : '**' : '' //Nothing for 1, bold for 2, bold italics for 3
+            content += `**\`${trinket.id}.\`** ${trinket.emoji}${styling}\`${trinket.name}\`${styling} ${trinket.ownerId.startsWith('gacha') ? `` : `| \`${owner.globalName ?? 'Unknown'}\``}\n`
+        }
+        embed.setDescription(content)
+        
+    } else {
+        embed.setDescription('No trinkets found')
+        await interaction.reply({embeds: [embed]})
+        return
+    }
+    const reply = await interaction.reply({embeds: [embed], components: [components]})
+
+    while (true) { //Bad practice? maybe... but it terminates after 15 minutes of inactivity so whatevahhh there's a base case
+        try {
+            var button = await reply.awaitMessageComponent({ time: 900_000 })
+        } catch { //Catches on timeout
+            reply.edit({embeds: [embed], components: []})
+            return
+        }
+
+        //Update active page
+        if (button.customId === 'listForward') {
+            (pageNum < pages.length) ? pageNum += 1 : pageNum = 1
+        } else { //listBack
+            (pageNum > 1) ? pageNum -= 1 : pageNum = pages.length
+        }
+
+        //Update page content
+        let content = ''
+        for (const trinket of pages[pageNum - 1]) {
+            const owner = interaction.client.users.cache.get(trinket.ownerId)
+            const styling = (trinket.tier > 1) ? (trinket.tier > 2) ? '***' : '**' : '' //Nothing for 1, bold for 2, bold italics for 3
+            content += `**\`${trinket.id}.\`** ${trinket.emoji}${styling}\`${trinket.name}\`${styling} ${trinket.ownerId.startsWith('gacha') ? `` : `| \`${owner.globalName ?? 'Unknown'}\``}\n`
+        }
+        embed.setDescription(content)
+             .setFooter({text: `Page ${pageNum} / ${pages.length}`})
+
+        reply.edit({embeds: [embed]})
+        button.deferUpdate()
+    }
+}
+
 //Returns true if url is a direct image link
 async function checkImageUrl(url) {
-    const res = await fetch(url);
-    const buff = await res.blob();
+    const res = await fetch(url)
+    const buff = await res.blob()
     return buff.type.startsWith('image/')
 }
