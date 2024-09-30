@@ -1,5 +1,6 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, SlashCommandBuilder } from "discord.js"
 import { Config, Trade, Trinkets, Users } from "../../database/objects.js"
+import { setTimeout } from 'timers/promises'
 
 export default {
     data: new SlashCommandBuilder()
@@ -287,13 +288,17 @@ async function handleTrade(reply, interaction) {
             reply = await reply.edit({components: [components]})
         }
 
-        //Await button response, trades time out after 15 minutes
-        try {
-            var button = await reply.awaitMessageComponent({ time: 900_000 })
-        } catch (e) {
-            embed.setTitle(`Trade between ${user.displayName} and ${target.displayName} timed out after 15 minutes :(`)
-            interaction.editReply({embeds: [embed], components: [], content: ''})
-            return null
+        //Await button response, trades time out after 10 minutes
+        const timeout = setTimeout(600_000, 'timeout')
+        const awaitButton = reply.awaitMessageComponent()
+        const button = await Promise.any([awaitButton, timeout])
+        
+        if (button === 'timeout') {
+            const embed = new EmbedBuilder()
+                .setColor(config.embedColor)
+                .setTitle(':x: Trade expired after 10 minutes :( Sorry the bot can crash if I don\'t do this :x:')
+            reply.edit({embeds: [embed], components: []})
+            return
         }
 
         //If either involved user presses their own button

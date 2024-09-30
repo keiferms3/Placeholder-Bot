@@ -3,6 +3,7 @@ import { Config, Trinkets, Users } from "../../database/objects.js"
 import emojiRegex from "emoji-regex-xs"
 import { clamp, UpdateGachaChance } from "../../helpers.js"
 import { displayGacha } from "./trinket-gacha.js"
+import { setTimeout } from 'timers/promises'
 
 export default {
     data: new SlashCommandBuilder()
@@ -410,16 +411,18 @@ async function list(interaction) {
     }
     const reply = await interaction.reply({embeds: [embed], components: [components], ephemeral: ephemeral})
 
-    while (true) { //Bad practice? maybe... but it terminates after 15 minutes of inactivity so whatevahhh there's a base case
-        try {
-            var button = await reply.awaitMessageComponent({ time: 300_000 })
-        } catch { //Catches on timeout
+    const timeout = setTimeout(600_000, 'timeout')
+    while (true) { //Bad practice? maybe... but it terminates after 10 minutes so whatevahhh there's a base case
+        const awaitButton = reply.awaitMessageComponent()
+        const button = await Promise.any([awaitButton, timeout])
+        
+        if (button === 'timeout') {
             reply.edit({embeds: [embed], components: []})
             return
         }
 
         //Update active page
-        if (button.customId === 'listForward') {
+        if (awaitButton.customId === 'listForward') {
             (pageNum < pages.length) ? pageNum += 1 : pageNum = 1
         } else { //listBack
             (pageNum > 1) ? pageNum -= 1 : pageNum = pages.length
@@ -438,7 +441,7 @@ async function list(interaction) {
              .setFooter({text: `Page ${pageNum} / ${pages.length}`})
 
         reply.edit({embeds: [embed]})
-        button.deferUpdate()
+        awaitButton.deferUpdate()
     }
 }
 
