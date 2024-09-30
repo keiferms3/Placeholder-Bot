@@ -63,6 +63,7 @@ export default {
                 .setRequired(true)
             ))
         ))
+        //Trinket list command
         .addSubcommand((list) => (
             list
             .setName('list')
@@ -77,12 +78,21 @@ export default {
                 .setName('createdby')
                 .setDescription('Filter trinkets by creator')
             ))
+            .addUserOption((user) => (
+                user
+                .setName('ownedby')
+                .setDescription('Filter trinkets by owner')
+            ))
             .addIntegerOption((int) => (
                 int
                 .setName('rarity')
                 .setDescription('Filter trinkets by rarity')
                 .addChoices([{name: 'Common', value: 1}, {name: 'Rare', value: 2}, {name: 'Legendary', value: 3}])
             ))
+            .addBooleanOption((visible) => (
+                visible
+                .setName('hidden'))
+                .setDescription('If true, command\'s output will not be visible to others'))
         ))
         //Trinket creation command
         .addSubcommand((create) => (
@@ -328,10 +338,12 @@ async function list(interaction) {
     await interaction.guild.members.fetch() // Load guild members into cache
     let pageNum = interaction.options.getInteger('page') ?? 1
     const createdBy = interaction.options.getUser('createdby')
+    const ownedBy = interaction.options.getUser('ownedby')
     const tier = interaction.options.getInteger('rarity')
     const config = await Config.getConfig(interaction.guild.id)
+    let ephemeral = interaction.options.getBoolean('hidden') ?? false
 
-    let trinkets = await Trinkets.getTrinkets(undefined, interaction.guild.id, undefined, createdBy?.id ?? undefined) //Handles filtering by creator
+    let trinkets = await Trinkets.getTrinkets(undefined, interaction.guild.id, ownedBy?.id ?? undefined, createdBy?.id ?? undefined) //Handles filtering by creator and owner
     const pageLen = 25
     const pages = []
 
@@ -349,9 +361,24 @@ async function list(interaction) {
     //Starting page validation
     pageNum = clamp(pageNum, 1, pages.length)
 
+    //Filtered string creation
+    let title = `:card_box: Trinket List :card_box:`
+    if (createdBy || ownedBy || tier) {
+        title += `\n`
+        if (createdBy) {
+            title += `Created by \`${createdBy.displayName}\`\n`
+        }
+        if (ownedBy) {
+            title += `Owned by \`${ownedBy.displayName}\`\n`
+        }
+        if (tier) {
+            title += `Rarity \`${config[`rarityNameT${tier}`]}\`\n`
+        }
+    }
+
     const embed = new EmbedBuilder()
         .setColor(config.embedColor)
-        .setTitle(`:card_box: Trinket List :card_box:`)
+        .setTitle(title)
         .setFooter({text: `Page ${pageNum} / ${pages.length}`})
     const components = new ActionRowBuilder()
         .setComponents(
@@ -378,10 +405,10 @@ async function list(interaction) {
         
     } else {
         embed.setDescription('No trinkets found')
-        await interaction.reply({embeds: [embed]})
+        await interaction.reply({embeds: [embed], ephemeral: ephemeral})
         return
     }
-    const reply = await interaction.reply({embeds: [embed], components: [components]})
+    const reply = await interaction.reply({embeds: [embed], components: [components], ephemeral: ephemeral})
 
     while (true) { //Bad practice? maybe... but it terminates after 15 minutes of inactivity so whatevahhh there's a base case
         try {
