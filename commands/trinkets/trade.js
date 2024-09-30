@@ -293,16 +293,16 @@ async function handleTrade(reply, interaction) {
         const awaitButton = reply.awaitMessageComponent()
         const button = await Promise.any([awaitButton, timeout])
         
+        //Check if trade expired and terminate if yes
         if (button === 'timeout') {
             const embed = new EmbedBuilder()
                 .setColor(config.embedColor)
-                .setTitle(':x: Trade expired after 10 minutes :( Sorry the bot can crash if I don\'t do this :x:')
+                .setTitle(':x: Trade expired after 10 minutes :( :x:')
             reply.edit({embeds: [embed], components: []})
-            return
+            tradeComplete = true
         }
-
         //If either involved user presses their own button
-        if ((button.user.id === user.id && button.customId === `ready${user.id}`) || (button.user.id === target.id && button.customId === `ready${target.id}`))  {
+        else if ((button.user.id === user.id && button.customId === `ready${user.id}`) || (button.user.id === target.id && button.customId === `ready${target.id}`))  {
             const components = reply.components
             const customId = button.user.id === user.id ? `ready${user.id}` : `ready${target.id}`
             for (let c in components[0].components) {
