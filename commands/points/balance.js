@@ -21,6 +21,7 @@ export default {
 
 async function balance(interaction) {
     try {
+        const config = await Config.getConfig(interaction.guild.id)
         const user = interaction.options.getUser('user') ?? interaction.user
         const ephemeral = interaction.options.getBoolean('hidden')
         const balance = await Users.getBalance(user.id, interaction.guild.id)
@@ -41,7 +42,7 @@ async function balance(interaction) {
         const embed = new EmbedBuilder()
             .setColor(embedColor)
             .setTitle(`${user.displayName}'s Balance`)
-            .setDescription(`:coin:  \`Placeholder Points\` | \`${balance} PP\`  :coin:\n:trophy:  \`Total Trinkets\` |  \`${ownedCount[0]} T1\` \`${ownedCount[1]} T2\` \`${ownedCount[2]} T3\`  :trophy:\n :hammer_pick:  \`Total Forged\` | \`${createdCount[0]} T1\` \`${createdCount[1]} T2\` \`${createdCount[2]} T3\`  :hammer_pick:`)
+            .setDescription(`:coin:  \`Placeholder Points\` | \`${balance} PP\`  :coin:\n:trophy:  \`Total Trinkets\` |  \`${ownedCount[0]} ${config.rarityNameT1}\` \`${ownedCount[1]} ${config.rarityNameT2}\` \`${ownedCount[2]} ${config.rarityNameT3}\`  :trophy:\n :hammer_pick:  \`Total Forged\` | \`${createdCount[0]} ${config.rarityNameT1}\` \`${createdCount[1]} ${config.rarityNameT2}\` \`${createdCount[2]} ${config.rarityNameT3}\`  :hammer_pick:`)
 
         return {embeds: [embed], ephemeral: ephemeral}
     } catch (e) {
