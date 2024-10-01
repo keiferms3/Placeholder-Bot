@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, EmbedBuilder } from "discord.js"
+import { SlashCommandBuilder, EmbedBuilder, Collection } from "discord.js"
 import { Config, Trinkets, Users } from "../../database/objects.js"
 
 export default {
@@ -25,11 +25,14 @@ async function balance(interaction) {
         const ephemeral = interaction.options.getBoolean('hidden')
         const balance = await Users.getBalance(user.id, interaction.guild.id)
         const embedColor = await Config.getConfig(interaction.guild.id, 'embedColor')
-        const trinkets = await Trinkets.getTrinkets(undefined, interaction.guild.id, user.id)
-        const tier1 = trinkets.filter(t => ( t.tier === 1 ))
-        const tier2 = trinkets.filter(t => ( t.tier === 2 ))
-        const tier3 = trinkets.filter(t => ( t.tier === 3 ))
-        
+        const trinketsOwned = await Trinkets.getTrinkets(undefined, interaction.guild.id, user.id)
+        const trinketsCreated = await Trinkets.getTrinkets(undefined, interaction.guild.id, undefined, user.id)
+
+        const ownedCount = [0, 0, 0]
+        trinketsOwned.map(t => ownedCount[t.tier-1]++)
+
+        const createdCount = [0, 0, 0]
+        trinketsCreated.map(t => createdCount[t.tier-1]++)
 
         if (balance == undefined) {
             return `Balance not found for user "${user.displayName}"`
@@ -38,7 +41,7 @@ async function balance(interaction) {
         const embed = new EmbedBuilder()
             .setColor(embedColor)
             .setTitle(`${user.displayName}'s Balance`)
-            .setDescription(`:coin:  \`Placeholder Points\` | \`${balance} PP\`  :coin:\n:trophy:  \`Total Trinkets\` |  \`${tier1.length} T1\` \`${tier2.length} T2\` \`${tier3.length} T3\`  :trophy:`)
+            .setDescription(`:coin:  \`Placeholder Points\` | \`${balance} PP\`  :coin:\n:trophy:  \`Total Trinkets\` |  \`${ownedCount[0]} T1\` \`${ownedCount[1]} T2\` \`${ownedCount[2]} T3\`  :trophy:\n :hammer_pick:  \`Total Forged\` | \`${createdCount[0]} T1\` \`${createdCount[1]} T2\` \`${createdCount[2]} T3\`  :hammer_pick:`)
 
         return {embeds: [embed], ephemeral: ephemeral}
     } catch (e) {
