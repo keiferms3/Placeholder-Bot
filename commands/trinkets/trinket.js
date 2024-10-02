@@ -304,7 +304,7 @@ async function trinketReturn(interaction) {
             trinket.save()
             embed.setTitle(`:white_check_mark: ${interaction.user.displayName} returned ${config[`rarityNameT${trinket.tier}`]} ${trinket.emoji}\`${trinket.name}\` \`(ID ${trinket.id})\` to the gacha! :white_check_mark:`)
                  .setDescription(`\`${config[`trinketCostT${trinket.tier}`]} PP\` added to balance`)
-                 Users.updateBalance(interaction.user.id, interaction.guild.id, config[`trinketCostT${trinket.tier}`])
+                 Users.updateBalance(interaction.user.id, interaction.guild.id, (config[`trinketCostT${trinket.tier}`]*config.returnReward))
             
             await interaction.followUp({embeds: [embed], components: []})
         } else if (buttonId === 'returnCancel') {
