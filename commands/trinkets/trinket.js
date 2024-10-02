@@ -63,6 +63,10 @@ export default {
                 .setDescription('Trinket\'s unique ID number')
                 .setRequired(true)
             ))
+            // .addBooleanOption((visible) => (
+            //     visible
+            //     .setName('hidden'))
+            //     .setDescription('If true, command\'s output will not be visible to others'))
         ))
         //Trinket list command
         .addSubcommand((list) => (

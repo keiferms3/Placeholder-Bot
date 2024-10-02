@@ -51,6 +51,10 @@ async function points(interaction) {
     return {embeds: [embed], ephemeral: ephemeral}
 }
 
-async function trinkets(interaction) {
+async function trinketsOwned(interaction) {
+    
+}
+
+async function trinketsCreated(interaction) {
     
 }
