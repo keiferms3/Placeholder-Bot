@@ -115,7 +115,17 @@ export default (database, DataTypes) => {
             defaultValue: 0.03,
             allowNull: false,
         },
-        returnReward: {
+        returnRatioT1: {
+            type: DataTypes.DOUBLE,
+            defaultValue: 1.0,
+            allowNull: false,
+        },
+        returnRatioT2: {
+            type: DataTypes.DOUBLE,
+            defaultValue: 1.0,
+            allowNull: false,
+        },
+        returnRatioT3: {
             type: DataTypes.DOUBLE,
             defaultValue: 1.0,
             allowNull: false,
