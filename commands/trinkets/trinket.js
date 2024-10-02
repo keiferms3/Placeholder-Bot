@@ -394,12 +394,13 @@ async function list(interaction) {
         )
 
     //Render the first page
-    
     if (pages.length > 0) {
         let content = ''
         for (const trinket of pages[pageNum - 1]) {
             const owner = interaction.client.users.cache.get(trinket.ownerId)
             const styling = (trinket.tier > 1) ? (trinket.tier > 2) ? '***' : '**' : '' //Nothing for 1, bold for 2, bold italics for 3
+            
+            if (trinket.hidden) {content += `**\`${trinket.id}.\`** :question:${styling}\`???\`${styling}\n`; continue} //Don't display hidden trinkets
             content += `**\`${trinket.id}.\`** ${trinket.emoji}${styling}\`${trinket.name}\`${styling} ${trinket.ownerId.startsWith('gacha') ? `` : `| \`${owner.globalName ?? 'Unknown'}\``}\n`
         }
         embed.setDescription(content)
