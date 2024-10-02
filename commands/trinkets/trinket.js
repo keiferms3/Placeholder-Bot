@@ -56,7 +56,7 @@ export default {
         .addSubcommand((scrap) => (
             scrap
             .setName('return')
-            .setDescription('Return a trinket to the gacha for its creation value')
+            .setDescription('Return a trinket to the gacha for most of its creation value')
             .addIntegerOption((int) => (
                 int
                 .setName('id')
