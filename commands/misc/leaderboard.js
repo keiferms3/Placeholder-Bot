@@ -42,9 +42,9 @@ async function points(interaction) {
     const users = await Users.getUser(null, interaction.guild.id)
     users.sort((a, b) => (b.points - a.points))
 
-    await handleLeaderboard(`:coin: Placeholder Point Leaderboard :coin:`, users, interaction, (array, i) => {
+    await handleLeaderboard(`:coin: Placeholder Point Leaderboard :coin:`, users, interaction, (users, i) => {
         const user = interaction.client.users.cache.get(users[i].userId) ?? {displayName: 'Unknown'}
-        return `**${i+1}.** \`${user.displayName}\` \`${users[i].points} PP\`\n`
+        return `**${i+1}.** \`${user.displayName}\` | \`${users[i].points} PP\`\n`
     })
 }
 
@@ -188,7 +188,7 @@ async function handleLeaderboard(title, array, interaction, lineFunction) {
             return
         }
 
-        //If button recieved, etermine which button was pressed
+        //If button recieved, determine which button was pressed
         if (button.customId === 'leaderboardForward') {
             (pageNum < maxPages) ? pageNum += 1 : pageNum = 1
         } else if (button.customId === 'leaderboardBack') {
