@@ -164,7 +164,7 @@ async function handleLeaderboard(title, array, interaction, lineFunction) {
     while (true) {
         //Render page
         let desc = ''
-        for (let i = (pageNum-1)*displayNum; i < displayNum; i++) {
+        for (let i = (pageNum-1)*displayNum; i < pageNum*displayNum; i++) {
             if (!array[i]) { continue } //If page has less than 10 members lol
             desc += lineFunction(array, i)
         }
