@@ -429,8 +429,11 @@ async function list(interaction) {
         //Update active page
         if (button.customId === 'listForward') {
             (pageNum < pages.length) ? pageNum += 1 : pageNum = 1
-        } else { //listBack
+        } else if (button.customId === 'listBack') {
             (pageNum > 1) ? pageNum -= 1 : pageNum = pages.length
+        } else {
+            reply.edit({embeds: [], content: 'this dont work what'})
+            return
         }
 
         //Update page content

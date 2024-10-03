@@ -112,7 +112,7 @@ export async function rollGacha(interaction) {
              .setDescription(`Created by ${interaction.client.users.cache.get(trinket.creatorId) ?? 'Unknown'} on <t:${Date.parse(trinket.createdAt) / 1000}:f>\n\n${trinket.description ?? ''}`)
              .setImage(trinket.image)
         embeds.push(embed)
-        if (reward !== -1) {
+        if (reward > 0) {
             const rewardEmbed = new EmbedBuilder()
                 .setColor(config.embedColor)
                 .setTitle(`Forgemaster ${(interaction.client.users.cache.get(trinket.creatorId)).displayName ?? 'Unknown'} got \`${reward} PP\``)
@@ -180,6 +180,10 @@ export async function forgeReward(trinket, interaction, updateBal = true) {
     const config = await Config.getConfig(interaction.guild.id)
     const creator = await Users.getUser(trinket.creatorId, interaction.guild.id)
 
+    if (trinket.returned) {
+        return 0
+    }
+
     const days = (Date.parse(trinket.updatedAt) - Date.parse(trinket.createdAt)) / (1000 * 3600 * 24)
     let interest = (config[`trinketCostT${trinket.tier}`] * config.forgeRewardRatio)
     for (let i = 0; i < Math.floor(days); i++) {
@@ -187,11 +191,8 @@ export async function forgeReward(trinket, interaction, updateBal = true) {
     }
     interest = Math.ceil(interest)
 
-    if (trinket.returned) {
-        return -1
-    }
     if (updateBal) { //If updateBal is false, this function can be used to just calculate the reward value
-        Users.updateBalance(creator.userId, creator.guildId, interest)
+        await Users.updateBalance(creator.userId, creator.guildId, interest)
     }
     
     return interest
