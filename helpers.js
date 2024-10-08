@@ -64,9 +64,14 @@ export async function CheckCooldown(command, interaction) {
     }
 }
 
-export function random(min = 0, max) {
+export function randomInt(min = 0, max) {
     min -= 1
     return Math.ceil(Math.random() * (max - min) + min)
+}
+
+export function randomFloat(min = 0, max) {
+    min -= 1
+    return Math.random() * ((max - min) + min)
 }
 
 export async function sleep(ms) {
@@ -93,13 +98,14 @@ export async function InitGachaChances(client) {
     }
 }
 
-//Called when a trinket is added/removed from the gacha. Operation = 1 for adding, -1 for removing
+//Called when a trinket is added/removed from the gacha
 export async function UpdateGachaChance(tier, interaction) {
     const guildId = interaction.guild.id
     const config = await Config.getConfig(guildId)
     const gachaChances = interaction.client.gachaChances.get(guildId)
     const trinkets = await Trinkets.getTrinkets(undefined, guildId, `gacha${tier}`)
 
-    const chance = clamp(trinkets.length * config[`perChanceT${tier}`], 0, config[`maxChanceT${tier}`])
+    //Chance is min chance + length * perchance, clamp to min and max values
+    const chance = clamp(config[`minChanceT${tier}`] + (trinkets.length * config[`perChanceT${tier}`]), config[`minChanceT${tier}`], config[`maxChanceT${tier}`])
     gachaChances.set(tier, chance)
 }
