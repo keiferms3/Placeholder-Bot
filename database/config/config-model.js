@@ -51,33 +51,48 @@ export default (database, DataTypes) => {
             allowNull: false,
         },
         perChanceT1: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.DOUBLE,
             defaultValue: 5,
             allowNull: false,
         },
         maxChanceT1: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.DOUBLE,
             defaultValue: 50,
             allowNull: false,
         },
+        minChanceT1: {
+            type: DataTypes.DOUBLE,
+            defaultValue: 20,
+            allowNull: false,
+        },
         perChanceT2: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.DOUBLE,
             defaultValue: 3,
             allowNull: false,
         },
         maxChanceT2: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.DOUBLE,
             defaultValue: 15,
             allowNull: false,
         },
+        minChanceT2: {
+            type: DataTypes.DOUBLE,
+            defaultValue: 5,
+            allowNull: false,
+        },
         perChanceT3: {
-            type: DataTypes.INTEGER,
-            defaultValue: 1,
+            type: DataTypes.DOUBLE,
+            defaultValue: 0.2,
             allowNull: false,
         },
         maxChanceT3: {
-            type: DataTypes.INTEGER,
-            defaultValue: 5,
+            type: DataTypes.DOUBLE,
+            defaultValue: 3,
+            allowNull: false,
+        },
+        minChanceT3: {
+            type: DataTypes.DOUBLE,
+            defaultValue: 1,
             allowNull: false,
         },
         rarityNameT1: {

@@ -1,6 +1,6 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from "discord.js"
 import { Config, Trinkets, Users } from "../../database/objects.js"
-import { random, sleep, UpdateGachaChance } from "../../helpers.js"
+import { randomInt, randomFloat, sleep, UpdateGachaChance } from "../../helpers.js"
 
 export async function displayGacha(interaction) {
     const config = await Config.getConfig(interaction.guild.id)
@@ -61,8 +61,8 @@ export async function rollGacha(interaction) {
     //Roll
     const gachaChances = interaction.client.gachaChances.get(interaction.guild.id)
     //Each chance value is equal to 100 minus the chance of rolling that tier or higher
-    const chances = [ 100 - (gachaChances.get(1) + gachaChances.get(2) + gachaChances.get(3)),  100 - (gachaChances.get(2) + gachaChances.get(3)), 100 - gachaChances.get(3)]
-    const result = random(1, 100)
+    const chances = [ gachaChances.get(3), gachaChances.get(3) + gachaChances.get(2), gachaChances.get(3) + gachaChances.get(2) + gachaChances.get(1)] //T3, T2, T1 chances
+    const result = randomFloat(0, 100)
 
     var trinket
     const selectTrinket = async (tier) => {
@@ -72,17 +72,18 @@ export async function rollGacha(interaction) {
         if (length <= 0) {
             return await selectTrinket(tier - 1)
         } else {
-            const result = random(0, length - 1)
+            const result = randomInt(0, length - 1)
             return trinkets[result]
         }
     }
-    if (result <= chances[0]) {
+    //Lower roll is better, result must be less than or equal to a chance value
+    if (result > chances[2]) {
         trinket = null
-    } else if (result > chances[2]) {
+    } else if (result <= chances[0]) {
         trinket = await selectTrinket(3)
-    } else if (result > chances[1]) {
+    } else if (result <= chances[1]) {
         trinket = await selectTrinket(2)
-    } else if (result > chances[0]) {
+    } else if (result <= chances[2]) {
         trinket = await selectTrinket(1)
     }
     
@@ -156,7 +157,7 @@ export async function viewGacha(interaction) {
     else { tier3Str = tier3Str.substring(0, tier3Str.lastIndexOf('**,**')) }
     
     //To prevent embed description from getting cut off if too long, divide description into multiple embeds ~1300 characters long
-    let description = `${config.rarityNameT1} Chance: \`${chances.get(1)}%\`\n${config.rarityNameT2} Chance: \`${chances.get(2)}%\`\n${config.rarityNameT3} Chance: \`${chances.get(3)}%\`\n\n${tier3Str}\n\n${tier2Str}\n\n${tier1Str}`
+    let description = `${config.rarityNameT1} Chance: \`${+chances.get(1).toFixed(2)}%\`\n${config.rarityNameT2} Chance: \`${+chances.get(2).toFixed(2)}%\`\n${config.rarityNameT3} Chance: \`${+chances.get(3).toFixed(2)}%\`\n\n${tier3Str}\n\n${tier2Str}\n\n${tier1Str}`
     const chunkCount = Math.ceil(description.length / 1300)
     const embeds = []
     let index = 0

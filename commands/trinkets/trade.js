@@ -303,10 +303,10 @@ async function handleTrade(reply, interaction) {
         }
         //If either involved user presses their own button
         else if ((button.user.id === user.id && button.customId === `ready${user.id}`) || (button.user.id === target.id && button.customId === `ready${target.id}`))  {
-            const components = reply.components
+            const components = reply.components[0]
             const customId = button.user.id === user.id ? `ready${user.id}` : `ready${target.id}`
-            for (let c in components[0].components) {
-                const component = components[0].components[c]
+            for (let c in components.components) {
+                const component = components.components[c]
                 if (component.customId === customId) { //Find the matching ready button
                     const ready = (component.style === ButtonStyle.Secondary)
                     customId === `ready${user.id}` ? trade.ready1 = ready : trade.ready2 = ready
@@ -315,8 +315,8 @@ async function handleTrade(reply, interaction) {
                         .setLabel(component.label)
                         .setCustomId(component.customId)
                         .setStyle(component.style === ButtonStyle.Secondary ? ButtonStyle.Primary : ButtonStyle.Secondary) //Style is used for both state and visuals
-                    components[0].components[c] = newComponent
-                    reply = await reply.edit({components: [components[0]]})
+                    components.components[c] = newComponent
+                    reply = await reply.edit({components: [components]})
                     button.deferUpdate()
                     break
                 }

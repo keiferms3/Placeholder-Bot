@@ -1,6 +1,7 @@
 import { SlashCommandBuilder, PermissionFlagsBits } from "discord.js"
 import { EventEmitter } from 'node:events'
 import { Config } from "../../database/objects.js"
+import { UpdateGachaChance } from "../../helpers.js"
 
 export default {
     data: new SlashCommandBuilder()
@@ -54,6 +55,9 @@ async function config(interaction) {
         //If both, update the option to the value
         const update = await Config.updateConfig(interaction.guildId, option, value)
         if (update[0] !== 0) {
+            UpdateGachaChance(1, interaction)
+            UpdateGachaChance(2, interaction)
+            UpdateGachaChance(3, interaction)
             return `\`${option}\` successfully updated to \`${value}\``
         } else {
             return `Option "\`${option}\`" doesn't exist`
