@@ -92,9 +92,9 @@ export async function InitGachaChances(client) {
         const t1Trinkets = await Trinkets.getTrinkets(undefined, guild[0], 'gacha1')
         const t2Trinkets = await Trinkets.getTrinkets(undefined, guild[0], 'gacha2')
         const t3Trinkets = await Trinkets.getTrinkets(undefined, guild[0], 'gacha3')
-        client.gachaChances.get(guild[0]).set(1, clamp(((t1Trinkets.length ?? 0) * config.perChanceT1), 0, config.maxChanceT1)) //Set to number of tier trinkets * perChance to a max of maxChance
-        client.gachaChances.get(guild[0]).set(2, clamp(((t2Trinkets.length ?? 0) * config.perChanceT2), 0, config.maxChanceT2))
-        client.gachaChances.get(guild[0]).set(3, clamp(((t3Trinkets.length ?? 0) * config.perChanceT3), 0, config.maxChanceT3))
+        client.gachaChances.get(guild[0]).set(1, clamp(config.minChanceT1 + ((t1Trinkets.length ?? 0) * config.perChanceT1), config.minChanceT1, config.maxChanceT1)) //Set to number of tier trinkets * perChance to a max of maxChance
+        client.gachaChances.get(guild[0]).set(2, clamp(config.minChanceT2 + ((t2Trinkets.length ?? 0) * config.perChanceT2), config.minChanceT2, config.maxChanceT2))
+        client.gachaChances.get(guild[0]).set(3, clamp(config.minChanceT3 + ((t3Trinkets.length ?? 0) * config.perChanceT3), config.minChanceT3, config.maxChanceT3))
     }
 }
 
