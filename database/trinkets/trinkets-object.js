@@ -8,7 +8,9 @@ TrinketsObj.addTrinket = async function (tier, name, emoji, image, description, 
     try {
         if (!hidden) hidden = false
         const ownerId = `gacha${tier}`
+        const trinkets = await TrinketsObj.getTrinkets(undefined, interaction.guildId)
         return await TrinketsObj.create({ 
+            trinketId: trinkets.length + 1,
             tier: tier, 
             name: name, 
             emoji: emoji, 
@@ -30,13 +32,15 @@ TrinketsObj.getTrinkets = async function (id = undefined, guildId = undefined, o
     try {
         //gross function... smelly function.... most of these model object functions are kinda stinky ngl
         if (id) {
-            return await TrinketsObj.findOne({ where: {id: id}})
+            return await TrinketsObj.findOne({ where: {trinketId: id}})
         } else if (ownerId && guildId) {
             return await TrinketsObj.findAll({ where: {ownerId: ownerId, guildId: guildId} })
         } else if (creatorId && guildId) {
             return await TrinketsObj.findAll({ where: {creatorId: creatorId, guildId: guildId} })
         } else if (guildId) {
             return await TrinketsObj.findAll({ where: {guildId: guildId} })
+        } else {
+            return await TrinketsObj.findAll()
         }
         
     } catch (e) {

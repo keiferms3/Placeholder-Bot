@@ -187,7 +187,7 @@ async function add(interaction) {
             errors += `Trinket \`#${item}\` doesn't exist!\n`
             continue
         } else if (trinket.ownerId !== user.id) {
-            errors += `You don't own trinket \`#${trinket.id}\`\n`
+            errors += `You don't own trinket \`#${trinket.trinketId}\`\n`
             continue
         }
         //If valid item is added
@@ -221,7 +221,7 @@ async function add(interaction) {
             }
             //Trinkets
             for (const trinket of trade[`items${whichUser}`]) {
-                content += `${config[`rarityNameT${trinket.tier}`]} ${trinket.name} (ID ${trinket.id}), `
+                content += `${config[`rarityNameT${trinket.tier}`]} ${trinket.name} (ID ${trinket.trinketId}), `
             }
 
             if (content.length > 2) { content = content.slice(0, -2) }

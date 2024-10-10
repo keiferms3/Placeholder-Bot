@@ -109,3 +109,7 @@ export async function UpdateGachaChance(tier, interaction) {
     const chance = clamp(config[`minChanceT${tier}`] + (trinkets.length * config[`perChanceT${tier}`]), config[`minChanceT${tier}`], config[`maxChanceT${tier}`])
     gachaChances.set(tier, chance)
 }
+
+export function parseEquation(str) {
+    return Function(`'use strict'; return (${str})`)()
+  }

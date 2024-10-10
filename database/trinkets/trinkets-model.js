@@ -5,6 +5,11 @@ export default (database, DataTypes) => {
             primaryKey: true,
             autoIncrement: true,
         },
+        trinketId: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0, //Default value purely for migration purposes, remove later
+        },
         tier: {
             type: DataTypes.INTEGER,
             allowNull: false,
@@ -49,6 +54,12 @@ export default (database, DataTypes) => {
         },
    }, {
         timestamps: true,
+        indexes: [
+            {
+                unique: true,
+                fields: ['trinketId', 'guildId']
+            }
+        ]
    })
    }
    

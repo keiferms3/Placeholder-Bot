@@ -145,7 +145,7 @@ export default (database, DataTypes) => {
             defaultValue: 1.0,
             allowNull: false,
         },
-        destroyCost: {
+        destroyRatio: {
             type: DataTypes.DOUBLE,
             defaultValue: 1.0,
             allowNull: false,

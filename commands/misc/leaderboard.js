@@ -16,7 +16,8 @@ export default {
                 {name: 'Wealth', value: 'wealth'}, 
                 {name: 'Trinkets Created (Quantity)', value: 'trinketCount'}, 
                 {name: 'Trinkets Created (Value)', value: 'trinketValue'},
-                {name: 'Trinkets Owned', value: 'trinketOwned'},])
+                {name: 'Trinkets Owned (Quantity)', value: 'trinketOwnedCount'},
+                {name: 'Trinkets Owned (Value)', value: 'trinketOwnedValue'},])
         ))
         .addBooleanOption((visible) => (
             visible
@@ -32,8 +33,10 @@ export default {
             await trinketsCount(interaction)
         } else if (command === 'trinketValue') {
             await trinketsValue(interaction)
-        } else if (command === 'trinketOwned') {
-            await trinketsOwned(interaction)
+        } else if (command === 'trinketOwnedCount') {
+            await trinketsOwnedCount(interaction)
+        } else if (command === 'trinketOwnedValue') {
+            await trinketsOwnedValue(interaction)
         }
     },
 }
@@ -116,7 +119,7 @@ async function trinketsValue(interaction) {
     })
 }
 
-async function trinketsOwned(interaction) {
+async function trinketsOwnedCount(interaction) {
     const users = await Users.getUser(null, interaction.guild.id)
 
     const trinketMap = new Collection()
@@ -128,14 +131,34 @@ async function trinketsOwned(interaction) {
     }
     const usersByTrinkets = [...trinketMap.entries()].sort((a, b) => (b[1][0] - a[1][0]))
     
-    await handleLeaderboard(`:package: Trinkets Owned Leaderboard :package:`, usersByTrinkets, interaction, (array, i) => {
+    await handleLeaderboard(`:package: Trinkets Owned (Quantity) Leaderboard :package:`, usersByTrinkets, interaction, (array, i) => {
         const user = interaction.client.users.cache.get(array[i][0]) ?? {displayName: 'Unknown'}
         return `**${i+1}.** \`${user.displayName}\` | \`${array[i][1][0]} Total Trinkets\` \`(${array[i][1][1]}/${array[i][1][2]}/${array[i][1][3]})\`\n`
     })
 }
 
+async function trinketsOwnedValue(interaction) {
+    const config = await Config.getConfig(interaction.guild.id)
+    const users = await Users.getUser(null, interaction.guild.id)
+
+    const trinketMap = new Collection()
+    for (const user of users) {
+        const trinkets = await Trinkets.getTrinkets(undefined, interaction.guild.id, user.userId)
+        const tally = [0, 0, 0, 0]
+        for (const trinket of trinkets) { tally[trinket.tier] += config[`trinketCostT${trinket.tier}`]}
+        tally[0] = tally[1] + tally[2] + tally[3]
+        trinketMap.set(user.userId, tally)
+    }
+    const usersByTrinkets = [...trinketMap.entries()].sort((a, b) => (b[1][0] - a[1][0]))
+    
+    await handleLeaderboard(`:package: Trinkets Owned (Value) Leaderboard :package:`, usersByTrinkets, interaction, (array, i) => {
+        const user = interaction.client.users.cache.get(array[i][0]) ?? {displayName: 'Unknown'}
+        return `**${i+1}.** \`${user.displayName}\` | \`${array[i][1][0]} Trinket Value\` \`(${array[i][1][1]}/${array[i][1][2]}/${array[i][1][3]})\`\n`
+    })
+}
+
 async function handleLeaderboard(title, array, interaction, lineFunction) {
-    const displayNum = 10
+    const DISPLAY_NUM = 10
 
     await interaction.guild.members.fetch() //To create cache
     const config = await Config.getConfig(interaction.guild.id)
@@ -156,7 +179,7 @@ async function handleLeaderboard(title, array, interaction, lineFunction) {
                 .setStyle(ButtonStyle.Secondary),
         )
 
-    const maxPages = Math.ceil(array.length / displayNum)
+    const maxPages = Math.ceil(array.length / DISPLAY_NUM)
     let firstPage = true
     let pageNum = 1
     const timeout = setTimeout(600_000, 'timeout')
@@ -164,7 +187,7 @@ async function handleLeaderboard(title, array, interaction, lineFunction) {
     while (true) {
         //Render page
         let desc = ''
-        for (let i = (pageNum-1)*displayNum; i < pageNum*displayNum; i++) {
+        for (let i = (pageNum-1)*DISPLAY_NUM; i < pageNum*DISPLAY_NUM; i++) {
             if (!array[i]) { continue } //If page has less than 10 members lol
             desc += lineFunction(array, i)
         }

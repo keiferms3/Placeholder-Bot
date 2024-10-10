@@ -39,21 +39,21 @@ async function inventory(interaction) {
         if (tier3.length > 0) {
             desc += `**--- ${config.rarityNameT3} ---**\n`
             for (const trinket of tier3) {
-                desc += `${trinket.emoji}***\`${trinket.name}\`*** \`ID ${trinket.id}\`\n`
+                desc += `${trinket.emoji}***\`${trinket.name}\`*** \`ID ${trinket.trinketId}\`\n`
             }
             desc += '\n'
         }
         if (tier2.length > 0) {
             desc += `**--- ${config.rarityNameT2} ---**\n`
             for (const trinket of tier2) {
-                desc += `${trinket.emoji}**\`${trinket.name}\`** \`ID ${trinket.id}\`\n`
+                desc += `${trinket.emoji}**\`${trinket.name}\`** \`ID ${trinket.trinketId}\`\n`
             }
             desc += '\n'
         }
         if (tier1.length > 0) {
             desc += `**--- ${config.rarityNameT1} ---**\n`
             for (const trinket of tier1) {
-                desc += `${trinket.emoji}\`${trinket.name}\` \`ID ${trinket.id}\`\n`
+                desc += `${trinket.emoji}\`${trinket.name}\` \`ID ${trinket.trinketId}\`\n`
             }
         }
         embed.setDescription(desc)

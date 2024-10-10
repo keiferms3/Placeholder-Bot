@@ -224,7 +224,7 @@ async function create(interaction) {
     const trinket = await Trinkets.addTrinket(tier, name, emoji, image, lore, user.userId, guildId, ephemeral, interaction)
     UpdateGachaChance(tier, interaction)
 
-    embed.setTitle(`${config[`rarityNameT${tier}`]} trinket ${emoji}\`${name}\` \`(ID ${trinket.id})\` successfully created!`)
+    embed.setTitle(`${config[`rarityNameT${tier}`]} trinket ${emoji}\`${name}\` \`(ID ${trinket.trinketId})\` successfully created!`)
          .setDescription(lore)
          .setImage(image)
     return {embeds: [embed], ephemeral: ephemeral}
@@ -277,7 +277,7 @@ async function trinketReturn(interaction) {
     const trinket = await Trinkets.getTrinkets(id)
     if (trinket && trinket.ownerId === interaction.user.id) {
         //TODO, a lot, move all the returning stuff outta here, fix button handling such as checking user press, figure out how to communicate trinket between functions
-        embed.setTitle(`Are you sure you want to return ${config[`rarityNameT${trinket.tier}`]} ${trinket.emoji}\`${trinket.name}\` \`(ID ${trinket.id})\` to the gacha?`)
+        embed.setTitle(`Are you sure you want to return ${config[`rarityNameT${trinket.tier}`]} ${trinket.emoji}\`${trinket.name}\` \`(ID ${trinket.trinketId})\` to the gacha?`)
         components.push(new ActionRowBuilder()
             .addComponents(
                 new ButtonBuilder()
@@ -313,7 +313,7 @@ async function trinketReturn(interaction) {
             trinket.ownerId = `gacha${trinket.tier}`
             trinket.returned = true
             trinket.save()
-            embed.setTitle(`:white_check_mark: ${interaction.user.displayName} returned ${config[`rarityNameT${trinket.tier}`]} ${trinket.emoji}\`${trinket.name}\` \`(ID ${trinket.id})\` to the gacha! :white_check_mark:`)
+            embed.setTitle(`:white_check_mark: ${interaction.user.displayName} returned ${config[`rarityNameT${trinket.tier}`]} ${trinket.emoji}\`${trinket.name}\` \`(ID ${trinket.trinketId})\` to the gacha! :white_check_mark:`)
                  .setDescription(`\`${Math.round(config[`trinketCostT${trinket.tier}`]*config[`returnRatioT${trinket.tier}`])} PP\` added to balance`)
                  Users.updateBalance(interaction.user.id, interaction.guild.id, (Math.round(config[`trinketCostT${trinket.tier}`]*config[`returnRatioT${trinket.tier}`])))
             UpdateGachaChance(trinket.tier, interaction)
@@ -337,14 +337,14 @@ async function display(trinket, interaction, config, hidden = false) {
         const embed = new EmbedBuilder()
         .setColor(config.embedColor)
         .setTitle(`${rarity} :question: \`???\``)
-        .setDescription(`ID: \`${trinket.id}\`\nCreated By: ${creator} on ${createdAt}\n\nsecret :)`)
+        .setDescription(`ID: \`${trinket.trinketId}\`\nCreated By: ${creator} on ${createdAt}\n\nsecret :)`)
         return embed
     }
 
     const embed = new EmbedBuilder()
         .setColor(config.embedColor)
         .setTitle(`${rarity} ${trinket.emoji} \`${trinket.name}\``)
-        .setDescription(`ID: \`${trinket.id}\`\nOwned By: ${owner} since ${updatedAt}\nCreated By: ${creator} on ${createdAt}\n\n${trinket.description ?? ''}`)
+        .setDescription(`ID: \`${trinket.trinketId}\`\nOwned By: ${owner} since ${updatedAt}\nCreated By: ${creator} on ${createdAt}\n\n${trinket.description ?? ''}`)
         .setImage(trinket.image)
 
     return embed
@@ -415,8 +415,8 @@ async function list(interaction) {
             const owner = interaction.client.users.cache.get(trinket.ownerId)
             const styling = (trinket.tier > 1) ? (trinket.tier > 2) ? '***' : '**' : '' //Nothing for 1, bold for 2, bold italics for 3
             
-            if (trinket.hidden) {content += `**\`${trinket.id}.\`** :question:${styling}\`???\`${styling}\n`; continue} //Don't display hidden trinkets
-            content += `**\`${trinket.id}.\`** ${trinket.emoji}${styling}\`${trinket.name}\`${styling} ${trinket.ownerId.startsWith('gacha') ? `` : `| \`${owner.globalName ?? 'Unknown'}\``}\n`
+            if (trinket.hidden) {content += `**\`${trinket.trinketId}.\`** :question:${styling}\`???\`${styling}\n`; continue} //Don't display hidden trinkets
+            content += `**\`${trinket.trinketId}.\`** ${trinket.emoji}${styling}\`${trinket.name}\`${styling} ${trinket.ownerId.startsWith('gacha') ? `` : `| \`${owner.globalName ?? 'Unknown'}\``}\n`
         }
         embed.setDescription(content)
         
@@ -453,8 +453,8 @@ async function list(interaction) {
             const owner = interaction.client.users.cache.get(trinket.ownerId)
             const styling = (trinket.tier > 1) ? (trinket.tier > 2) ? '***' : '**' : '' //Nothing for 1, bold for 2, bold italics for 3
 
-            if (trinket.hidden) {content += `**\`${trinket.id}.\`** :question:${styling}\`???\`${styling}\n`; continue} //Don't display hidden trinkets
-            content += `**\`${trinket.id}.\`** ${trinket.emoji}${styling}\`${trinket.name}\`${styling} ${trinket.ownerId.startsWith('gacha') ? `` : `| \`${owner.globalName ?? 'Unknown'}\``}\n`
+            if (trinket.hidden) {content += `**\`${trinket.trinketId}.\`** :question:${styling}\`???\`${styling}\n`; continue} //Don't display hidden trinkets
+            content += `**\`${trinket.trinketId}.\`** ${trinket.emoji}${styling}\`${trinket.name}\`${styling} ${trinket.ownerId.startsWith('gacha') ? `` : `| \`${owner.globalName ?? 'Unknown'}\``}\n`
         }
         embed.setDescription(content)
              .setFooter({text: `Page ${pageNum} / ${pages.length}`})

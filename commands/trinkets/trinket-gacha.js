@@ -109,7 +109,7 @@ export async function rollGacha(interaction) {
         const reward = await forgeReward(trinket, interaction) //Give trinket creator point reward
         
         await interaction.guild.members.fetch() //Load all guild users into cache
-        embed.setTitle(`:white_check_mark: ${interaction.user.displayName} got ${isHidden ? 'Hidden ':''}${config[`rarityNameT${trinket.tier}`]} ${trinket.emoji}\`${trinket.name}\` \`(ID ${trinket.id})\` :white_check_mark: `)
+        embed.setTitle(`:white_check_mark: ${interaction.user.displayName} got ${isHidden ? 'Hidden ':''}${config[`rarityNameT${trinket.tier}`]} ${trinket.emoji}\`${trinket.name}\` \`(ID ${trinket.trinketId})\` :white_check_mark: `)
              .setDescription(`Created by ${interaction.client.users.cache.get(trinket.creatorId) ?? 'Unknown'} on <t:${Date.parse(trinket.createdAt) / 1000}:f>\n\n${trinket.description ?? ''}`)
              .setImage(trinket.image)
         embeds.push(embed)
@@ -144,9 +144,9 @@ export async function viewGacha(interaction) {
     let tier3Str = t3Header
 
     //List trinkets of each rarity
-    for (const trinket of tier1) { tier1Str = tier1Str + (!trinket.hidden ? `${trinket.emoji}\`${trinket.name}\` \`#${trinket.id}\`**,** ` : `:question:\`???\` \`#${trinket.id}\`**,** `)}
-    for (const trinket of tier2) { tier2Str = tier2Str + (!trinket.hidden ? `${trinket.emoji}**\`${trinket.name}\`** \`#${trinket.id}\`**,** ` : `:question:\`???\` \`#${trinket.id}\`**,** `)}
-    for (const trinket of tier3) { tier3Str = tier3Str + (!trinket.hidden ? `${trinket.emoji}***\`${trinket.name}\`*** \`#${trinket.id}\`**,** ` : `:question:\`???\` \`#${trinket.id}\`**,** `)}
+    for (const trinket of tier1) { tier1Str = tier1Str + (!trinket.hidden ? `${trinket.emoji}\`${trinket.name}\` \`#${trinket.trinketId}\`**,** ` : `:question:\`???\` \`#${trinket.trinketId}\`**,** `)}
+    for (const trinket of tier2) { tier2Str = tier2Str + (!trinket.hidden ? `${trinket.emoji}**\`${trinket.name}\`** \`#${trinket.trinketId}\`**,** ` : `:question:\`???\` \`#${trinket.trinketId}\`**,** `)}
+    for (const trinket of tier3) { tier3Str = tier3Str + (!trinket.hidden ? `${trinket.emoji}***\`${trinket.name}\`*** \`#${trinket.trinketId}\`**,** ` : `:question:\`???\` \`#${trinket.trinketId}\`**,** `)}
 
     //If there are no trinkets of rarity, list "NOTHING". Otherwise, remove the last comma in the list
     if (tier1Str === t1Header) { tier1Str = tier1Str + '`NOTHING!`'}
