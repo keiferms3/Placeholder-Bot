@@ -187,10 +187,12 @@ export async function forgeReward(trinket, interaction, updateBal = true) {
 
     const days = (Date.parse(trinket.updatedAt) - Date.parse(trinket.createdAt)) / (1000 * 3600 * 24)
     let interest = (config[`trinketCostT${trinket.tier}`] * config.forgeRewardRatio)
-    for (let i = 0; i < Math.floor(days); i++) {
+    const fullDays = Math.floor(days) //Find number of full days of interest to accrue
+    for (let i = 0; i < fullDays; i++) { //Accrue compounding interest
         interest += interest * config[`forgeRewardDailyT${trinket.tier}`]
     }
-    interest = Math.ceil(interest)
+    interest += interest * (config[`forgeRewardDailyT${trinket.tier}`] * (days - fullDays)) //Accrue unfinshed day's interest
+    interest = Math.round(interest)
 
     if (updateBal) { //If updateBal is false, this function can be used to just calculate the reward value
         await Users.updateBalance(creator.userId, creator.guildId, interest)
