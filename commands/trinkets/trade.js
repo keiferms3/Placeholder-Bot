@@ -211,7 +211,7 @@ async function add(interaction) {
     const message = await trade.reply.fetch()
     const tradeEmbed = message.embeds[0]
     const tradeComponents = message.components[0]
-    let content = '`'
+    let content = '` '
     for (const field of tradeEmbed.fields) { //Each side of the trade is stored in an embed field, iterate to find the user's side then break
         if (field.name === user.displayName) {
             
@@ -224,8 +224,8 @@ async function add(interaction) {
                 content += `${config[`rarityNameT${trinket.tier}`]} ${trinket.name} (ID ${trinket.id}), `
             }
 
-            content = content.slice(0, -2)
-            content += '`'
+            if (content.length > 2) { content = content.slice(0, -2) }
+            content += ' `'
             field.value = content
 
             //TODO implement this some time, this solution doesn't work properly and I need to add other things :(
@@ -358,9 +358,10 @@ async function handleTrade(reply, interaction) {
                 await trinket.save()
             }
 
-            const embed = new EmbedBuilder()
-                .setColor(config.embedColor)
-                .setTitle(':white_check_mark: Trade successful! :white_check_mark:')
+            const embed = new EmbedBuilder(reply.embeds[0])
+            embed.setTitle(':white_check_mark: Trade successful! :white_check_mark:')
+            embed.setDescription(null)
+            
             await reply.edit({embeds: [embed], components: []})
             tradeComplete = true
         }
