@@ -2,7 +2,7 @@ import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, SlashComman
 import { Config, Trinkets, Users } from "../../database/objects.js"
 import emojiRegex from "emoji-regex-xs"
 import { clamp, UpdateGachaChance } from "../../helpers.js"
-import { displayGacha } from "./trinket-gacha.js"
+import { displayGacha, forgeReward } from "./trinket-gacha.js"
 import { setTimeout } from 'timers/promises'
 
 export default {
@@ -235,20 +235,31 @@ async function view(interaction) {
     const id = interaction.options.getInteger('id')
     let ephemeral = interaction.options.getBoolean('hidden')
 
-    let embed
+    const embeds = []
     const trinket = await Trinkets.getTrinkets(id)
     if (trinket) {
         if (ephemeral && trinket.creatorId === interaction.user.id) { 
-            embed = await display(trinket, interaction, config, false) //If owner calls hidden view
+            embeds.push(await display(trinket, interaction, config, false)) //If owner calls hidden view
         } else {
-            embed = await display(trinket, interaction, config, trinket.hidden)
+            embeds.push(await display(trinket, interaction, config, trinket.hidden))
+        }
+
+        if (trinket.ownerId.startsWith('gacha')) {
+            const reward = await forgeReward(trinket, interaction, false)
+            if (reward > 0) {
+                embeds.push(
+                    new EmbedBuilder()
+                        .setColor(config.embedColor)
+                        .setTitle(`Current Return on Roll: \`${reward} PP\``)
+                )
+            }
         }
         
     } else {
-        embed = new EmbedBuilder().setTitle(`:x: Trinket \`ID ${id}\` doesn't exist :x:`)
+        embeds = [new EmbedBuilder().setTitle(`:x: Trinket \`ID ${id}\` doesn't exist :x:`)]
         ephemeral = true
     }
-    return {embeds: [embed], ephemeral: ephemeral}
+    return {embeds: embeds, ephemeral: ephemeral}
 }
 
 async function search(interaction) {

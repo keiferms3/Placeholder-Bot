@@ -185,7 +185,7 @@ export async function forgeReward(trinket, interaction, updateBal = true) {
         return 0
     }
 
-    const days = (Date.parse(trinket.updatedAt) - Date.parse(trinket.createdAt)) / (1000 * 3600 * 24)
+    const days = (Date.now() - Date.parse(trinket.createdAt)) / (1000 * 3600 * 24)
     let interest = (config[`trinketCostT${trinket.tier}`] * config.forgeRewardRatio)
     const fullDays = Math.floor(days) //Find number of full days of interest to accrue
     for (let i = 0; i < fullDays; i++) { //Accrue compounding interest
