@@ -8,7 +8,6 @@ export default (database, DataTypes) => {
         trinketId: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            defaultValue: 0, //Default value purely for migration purposes, remove later
         },
         tier: {
             type: DataTypes.INTEGER,
