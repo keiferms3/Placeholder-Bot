@@ -259,7 +259,7 @@ async function add(interaction) {
     return {embeds: [embed], ephemeral: true}
 }
 
-//Handle everything regarding the trade window itself. User confirmation buttons, canceling, and confirming the trade
+//Handle everything regarding the trade's buttons. User confirmation buttons, canceling, and confirming the trade
 async function handleTrade(reply, interaction) {
     const target = interaction.options.getUser('user')
     const user = interaction.user
@@ -314,7 +314,7 @@ async function handleTrade(reply, interaction) {
                     const newComponent = new ButtonBuilder()
                         .setLabel(component.label)
                         .setCustomId(component.customId)
-                        .setStyle(component.style === ButtonStyle.Secondary ? ButtonStyle.Primary : ButtonStyle.Secondary) //Style is used for both state and visuals
+                        .setStyle(component.style === ButtonStyle.Secondary ? ButtonStyle.Primary : ButtonStyle.Secondary)
                     components.components[c] = newComponent
                     reply = await reply.edit({components: [components]})
                     button.deferUpdate()

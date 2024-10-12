@@ -50,7 +50,7 @@ export default {
 	
 	else { 
 		//console.log(interaction)
-		console.log('wuh')
+		//console.log('wuh')
 		return 
 	}
 	

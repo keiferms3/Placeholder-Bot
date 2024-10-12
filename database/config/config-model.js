@@ -150,6 +150,11 @@ export default (database, DataTypes) => {
             defaultValue: 1.0,
             allowNull: false,
         },
+        gamblingDiceNames: {
+            type: DataTypes.STRING,
+            defaultValue: '1,2,3,4,5,6',
+            allowNull: false,
+        },
    }, {
        timestamps: false,
    })

@@ -201,11 +201,11 @@ async function handleLeaderboard(title, array, interaction, lineFunction) {
         }
         else { await reply.edit({embeds: [embed]}) }
 
-        //Await buttons or cooldown
+        //Await buttons or timeout
         const awaitButton = reply.awaitMessageComponent()
         const button = await Promise.any([awaitButton, timeout])
 
-        //Check if cooldown triggered
+        //Check if timeout triggered
         if (button === 'timeout') {
             reply.edit({embeds: [embed], components: []})
             return

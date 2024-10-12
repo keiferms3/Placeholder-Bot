@@ -46,8 +46,8 @@ export async function rollGacha(interaction) {
     await interaction.reply({embeds: [embed]})
 
     //Start async cosmetic rolling, WIP, maybe replace with available trinket icons cycling?
-    let dots = ''
     const animate = async () => {
+        let dots = ''
         for (let i = 0; i < 4; i++) {
             dots += '.'
             embed.setTitle(`:game_die: ${interaction.user.displayName} is rolling${dots}`)
