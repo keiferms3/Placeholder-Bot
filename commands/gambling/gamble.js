@@ -33,7 +33,7 @@ async function dice(interaction) {
     let bet = interaction.options.getInteger('bet') ?? 20
     const config = await Config.getConfig(interaction.guild.id)
     const faceNames = config.gamblingDiceNames.split(',')
-    const user = await Users.getUser(interaction.user.id, interaction.guild.id)
+    let user = await Users.getUser(interaction.user.id, interaction.guild.id)
 
     //Initialize relevant info
     const selectedButtons = [false, false, false, false, false, false]
@@ -109,6 +109,8 @@ async function dice(interaction) {
         else if (button.customId === 'diceRoll') {
             //Declare inline function so can be asynchronously run
             const handleDiceRoll = async () => {
+                
+
                 //Abort if no bets placed
                 if (numSelected < 1) {
                     let embed = new EmbedBuilder()
@@ -122,6 +124,7 @@ async function dice(interaction) {
                 const selected = [...selectedButtons] 
                 const realBet = bet
 
+                //Declare embed
                 let selectedString = ''
                 selected.forEach((b, i) => {
                     if (b) {
@@ -135,16 +138,8 @@ async function dice(interaction) {
                     .setTitle(`:game_die: ${faceNames[randomInt(0, 5)]}`)
                     .setDescription(`${interaction.user.displayName} is betting on \`${selectedString}\``)
                 const rollReply = await button.reply({embeds: [rollEmbed]})
-            
-                //Immediately deduct roll
-                if (user.points < realBet) {
-                    rollEmbed.setTitle(`:x: Roll failed :x:`)
-                        .setDescription(`Not enough points. Roll requires \`${realBet} PP\`, you have \`${user.points} PP\``)
-                    await rollReply.edit({embeds: [rollEmbed]})
-                    return
-                }
-                await Users.updateBalance(user.userId, interaction.guild.id, -1*realBet)
-            
+
+
                 //Start async cosmetic rolling
                 const animate = async () => {
                     let dots = ''
@@ -186,7 +181,22 @@ async function dice(interaction) {
                     await rollReply.edit({embeds: [rollEmbed]})
                 }       
             }
-            handleDiceRoll() //Actually run the function
+            //***** Actually handle the roll *****
+            //Declare embed and relevant info
+            user = await Users.getUser(interaction.user.id, interaction.guild.id)
+            
+            //Immediately deduct roll
+            if (user.points < bet) {
+                const embed = new EmbedBuilder()
+                    .setColor(config.embedColor)
+                    .setTitle(`:x: Roll failed :x:`)
+                    .setDescription(`Not enough points. Roll requires \`${bet} PP\`, you have \`${user.points} PP\``)
+                await button.reply({embeds: [embed]})
+                continue
+            }
+            await Users.updateBalance(user.userId, interaction.guild.id, -1*bet)
+
+            handleDiceRoll() //Call roll function
         }
 
         //********** If change bet button pressed ********** 
