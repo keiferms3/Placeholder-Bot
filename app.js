@@ -8,7 +8,7 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBit
 
 //Parse commands from commands folder
 client.commands = await IterateFolders('commands', '.js', async (file, filePath) => {
-	const command = (await import(filePath)).default
+	const command = (await import(filePath))?.default
 	if (!command) { return } //For non command files in command folders
 	if ('data' in command && 'execute' in command) {
 		return {key: command.data.name, value: command}

@@ -62,7 +62,7 @@ async function dice(interaction) {
     
     let menuEmbed = new EmbedBuilder()
         .setColor(config.embedColor)
-        .setTitle(`:game_die: Dice Betting :game_die:`)
+        .setTitle(`:game_die: ${interaction.user.displayName}'s Dice Betting :game_die:`)
         .setDescription(`:coin: Current Bet: \` ${bet} PP \`\n:slot_machine: Payout Chance: \` ${(chance * 100).toFixed(2)}% \`\n:money_with_wings: Reward Multiplier: \` ${multiplier}x \` = \` ${Math.floor(bet * multiplier)} PP \``)
 
     let menuReply = await interaction.reply({embeds: [menuEmbed], components: [diceRow1, diceRow2, gambleRow]})
@@ -109,8 +109,6 @@ async function dice(interaction) {
         else if (button.customId === 'diceRoll') {
             //Declare inline function so can be asynchronously run
             const handleDiceRoll = async () => {
-                
-
                 //Abort if no bets placed
                 if (numSelected < 1) {
                     let embed = new EmbedBuilder()
@@ -171,9 +169,10 @@ async function dice(interaction) {
             
                 //Determine if selected value was rolled and handle results
                 if (selected[result]) {
-                    await Users.updateBalance(user.userId, interaction.guild.id, Math.floor(realBet * multiplier))
+                    const payout = Math.floor(realBet * multiplier)
+                    await Users.updateBalance(user.userId, interaction.guild.id, payout)
                     rollEmbed.setTitle(`:white_check_mark: ${resultName}`)
-                        .setDescription(`:tada: ${interaction.user.displayName} won! \`${Math.floor(realBet * multiplier)} PP\` added to balance!`)
+                        .setDescription(`:tada: ${interaction.user.displayName} won! \`${payout} PP\` added to balance!`)
                     await rollReply.edit({embeds: [rollEmbed]})
                 } else {
                     rollEmbed.setTitle(`:x: ${resultName}`)
@@ -181,6 +180,7 @@ async function dice(interaction) {
                     await rollReply.edit({embeds: [rollEmbed]})
                 }       
             }
+            
             //***** Actually handle the roll *****
             //Declare embed and relevant info
             user = await Users.getUser(interaction.user.id, interaction.guild.id)
@@ -196,7 +196,7 @@ async function dice(interaction) {
             }
             await Users.updateBalance(user.userId, interaction.guild.id, -1*bet)
 
-            handleDiceRoll() //Call roll function
+            handleDiceRoll() //Call roll function asynchronously
         }
 
         //********** If change bet button pressed ********** 

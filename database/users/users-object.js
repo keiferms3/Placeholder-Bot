@@ -20,7 +20,7 @@ UsersObj.updateBalance = async function (uid, gid, pointVal) {
         }
         user.points = pointBal
         await user.save()
-        return pointDifference
+        return user
         
     } catch (e) {
         console.error(e)
