@@ -57,7 +57,11 @@ export async function create(interaction) {
 
 //Returns true if url is a direct image link
 export async function checkImageUrl(url) {
-    const res = await fetch(url)
-    const buff = await res.blob()
-    return buff.type.startsWith('image/')
+    try {
+        const res = await fetch(url)
+        const buff = await res.blob()
+        return buff.type.startsWith('image/')
+    } catch {
+        return false
+    }
 }
