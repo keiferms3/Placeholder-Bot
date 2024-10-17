@@ -33,7 +33,7 @@ export default {
             .addStringOption((name) => (
                 name
                 .setName('name')
-                .setDescription('Trinket\'s non-unique name')
+                .setDescription('Name of the trinket to view')
                 .setRequired(true)
                 .setAutocomplete(true)
             ))
@@ -63,10 +63,6 @@ export default {
                 .setDescription('Trinket\'s unique ID number')
                 .setRequired(true)
             ))
-            // .addBooleanOption((visible) => (
-            //     visible
-            //     .setName('hidden'))
-            //     .setDescription('If true, command\'s output will not be visible to others'))
         ))
         //Trinket list command
         .addSubcommand((list) => (
