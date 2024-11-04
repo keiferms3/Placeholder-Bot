@@ -23,6 +23,11 @@ export default {
 async function inventory(interaction) {
     try { 
         const user = interaction.options.getUser('user') ?? interaction.user
+
+        if (user.id === '216169470547197953') {
+            return {content: 'no :)'}
+        }
+
         const ephemeral = interaction.options.getBoolean('hidden')
         const balance = await Users.getBalance(user.id, interaction.guild.id)
         const config = await Config.getConfig(interaction.guild.id)
