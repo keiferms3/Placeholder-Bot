@@ -64,9 +64,10 @@ async function inventory(interaction) {
             let page = desc.substring(lastIndex, index)
             if (page.endsWith('---')) {
                 index = desc.indexOf('\n', index + 1) 
+                page = desc.substring(lastIndex, index)
             }
-
-            pages.push(desc.substring(lastIndex, index))
+            
+            pages.push(page)
         }
 
         await handlePages(`${user.displayName}'s Inventory`, pages, interaction)
