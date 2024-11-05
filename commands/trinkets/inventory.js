@@ -62,7 +62,7 @@ async function inventory(interaction) {
             index = desc.indexOf('\n', (i+1)*CHUNK_SIZE) 
             index = (index === -1) ? (i+1)*CHUNK_SIZE : index + 1
             let page = desc.substring(lastIndex, index)
-            if (page.endsWith('---**')) {
+            if (page.endsWith('---**\n')) {
                 index = desc.indexOf('\n', index + 1) 
                 page = desc.substring(lastIndex, index)
             }
