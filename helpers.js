@@ -77,7 +77,7 @@ export function randomFloat(min = 0, max) {
 }
 
 export async function sleep(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms))
+    return await setTimeout(ms, 'timeout')
 }
 
 //Ensures a number is at least min, and at most max

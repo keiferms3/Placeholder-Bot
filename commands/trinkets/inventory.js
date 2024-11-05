@@ -62,8 +62,8 @@ async function inventory(interaction) {
             index = desc.indexOf('\n', (i+1)*CHUNK_SIZE) 
             index = (index === -1) ? (i+1)*CHUNK_SIZE : index + 1
             let page = desc.substring(lastIndex, index)
-            if (page.endsWith('---**\n')) {
-                index = desc.indexOf('\n', index + 1) 
+            if (page.endsWith('---**\n')) { //On edge case that final line of page is a rarity header
+                index = desc.indexOf('\n', index + 1) //Go to last line
                 page = desc.substring(lastIndex, index)
             }
 
