@@ -3,6 +3,8 @@ import fs from 'fs'
 import { fileURLToPath } from 'url'
 import { Collection } from 'discord.js'
 import { Config, Trinkets, Users } from './database/objects.js'
+import { setTimeout } from 'timers/promises'
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from "discord.js"
 
 
 export async function IterateFolder(dir, filter, func) {
@@ -110,6 +112,65 @@ export async function UpdateGachaChance(tier, interaction) {
     gachaChances.set(tier, chance)
 }
 
-export function parseEquation(str) {
-    return Function(`'use strict'; return (${str})`)()
-  }
+
+//Modified handleLeaderboard function (from leaderboard.js)
+export async function handlePages(title, pages, interaction) {
+
+    const config = await Config.getConfig(interaction.guild.id)
+    const ephemeral = interaction.options.getBoolean('hidden')
+
+    const embed = new EmbedBuilder()
+        .setColor(config.embedColor)
+        .setTitle(title)
+    const components = new ActionRowBuilder()
+        .setComponents(
+            new ButtonBuilder()
+                .setCustomId('leaderboardBack')
+                .setLabel('◀ Previous Page')
+                .setStyle(ButtonStyle.Secondary),
+            new ButtonBuilder()
+                .setCustomId('leaderboardForward')
+                .setLabel('Next Page ▶')
+                .setStyle(ButtonStyle.Secondary),
+        )
+
+    const maxPages = pages.length
+    let firstPage = true
+    let pageNum = 1
+    const timeout = setTimeout(600_000, 'timeout')
+    
+    while (true) {
+        //Render page
+        let desc = ''
+        embed.setDescription(pages[pageNum-1])
+             .setFooter({text: `Page ${pageNum} / ${maxPages}`})
+        
+        //Reply if first page, otherwise edit
+        if (firstPage) { 
+            var reply = await interaction.reply({embeds: [embed], components: [components], ephemeral: ephemeral})
+            firstPage = false 
+        }
+        else { await reply.edit({embeds: [embed]}) }
+
+        //Await buttons or timeout
+        const awaitButton = reply.awaitMessageComponent()
+        const button = await Promise.any([awaitButton, timeout])
+
+        //Check if timeout triggered
+        if (button === 'timeout') {
+            reply.edit({embeds: [embed], components: []})
+            return
+        }
+
+        //If button recieved, determine which button was pressed
+        if (button.customId === 'leaderboardForward') {
+            (pageNum < maxPages) ? pageNum += 1 : pageNum = 1
+        } else if (button.customId === 'leaderboardBack') {
+            (pageNum > 1) ? pageNum -= 1 : pageNum = maxPages
+        } else {
+            reply.edit({embeds: [], content: 'Error: Invalid button ID recieved'})
+            return
+        }
+        button.deferUpdate()
+    }
+}
