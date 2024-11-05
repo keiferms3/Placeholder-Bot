@@ -1,5 +1,6 @@
 import { EmbedBuilder, SlashCommandBuilder } from "discord.js"
 import { Config, Trinkets, Users } from "../../database/objects.js"
+import { handlePages } from "../../helpers.js"
 
 export default {
     data: new SlashCommandBuilder()
@@ -23,11 +24,6 @@ export default {
 async function inventory(interaction) {
     try { 
         const user = interaction.options.getUser('user') ?? interaction.user
-
-        if (user.id === '216169470547197953') {
-            return {content: 'no :)'}
-        }
-
         const ephemeral = interaction.options.getBoolean('hidden')
         const balance = await Users.getBalance(user.id, interaction.guild.id)
         const config = await Config.getConfig(interaction.guild.id)
@@ -35,9 +31,6 @@ async function inventory(interaction) {
         const tier1 = trinkets.filter(t => ( t.tier === 1 ))
         const tier2 = trinkets.filter(t => ( t.tier === 2 ))
         const tier3 = trinkets.filter(t => ( t.tier === 3 ))
-        const embed = new EmbedBuilder()
-            .setColor(config.embedColor)
-            .setTitle(`${user.displayName}'s Inventory`)
             
         let desc = `:coin: \`${balance} PP\` :coin:\n\n`
 
@@ -61,9 +54,22 @@ async function inventory(interaction) {
                 desc += `${trinket.emoji}\`${trinket.name}\` \`ID ${trinket.trinketId}\`\n`
             }
         }
-        embed.setDescription(desc)
+
+        const CHUNK_SIZE = 800
+        const chunkCount = Math.ceil(desc.length / CHUNK_SIZE)
+        const pages = []
+        let index = 0
+        for (let i = 0; i < chunkCount; i++) {
+            const embed = new EmbedBuilder().setColor(config.embedColor)
+            const lastIndex = index
+            index = desc.indexOf('\n', (i+1)*CHUNK_SIZE) 
+            index = (index === -1) ? (i+1)*CHUNK_SIZE : index + 1
+
+            pages.push(desc.substring(lastIndex, index))
+        }
+
+        await handlePages(`${user.displayName}'s Inventory`, pages, interaction)
         
-        return {embeds: [embed], ephemeral: ephemeral}
     } catch (e) {
         console.error(e)
         return e

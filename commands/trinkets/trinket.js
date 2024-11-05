@@ -138,7 +138,7 @@ export default {
             .addBooleanOption((visible) => (
                 visible
                 .setName('hidden'))
-                .setDescription('If true, command\'s output will not be visible to others'))
+                .setDescription('If true, trinket will not be visible to others until rolled'))
         )),
     async execute(interaction) {
         try {

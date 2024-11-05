@@ -162,13 +162,15 @@ export async function viewGacha(interaction) {
     
     //To prevent embed description from getting cut off if too long, divide description into multiple embeds ~1300 characters long
     let description = `${config.rarityNameT1} Chance: \`${+chances.get(1).toFixed(2)}%\`\n${config.rarityNameT2} Chance: \`${+chances.get(2).toFixed(2)}%\`\n${config.rarityNameT3} Chance: \`${+chances.get(3).toFixed(2)}%\`\n\n${tier3Str}\n\n${tier2Str}\n\n${tier1Str}`
-    const chunkCount = Math.ceil(description.length / 1300)
+    
+    const CHUNK_SIZE = 1300
+    const chunkCount = Math.ceil(description.length / CHUNK_SIZE)
     const embeds = []
     let index = 0
     for (let i = 0; i < chunkCount; i++) {
         const lastIndex = index
-        index = description.indexOf('**,** ', (i+1)*1300) 
-        index = (index === -1) ? (i+1)*1300 : index + 5
+        index = description.indexOf('**,** ', (i+1)*CHUNK_SIZE) 
+        index = (index === -1) ? (i+1)*CHUNK_SIZE : index + 5
 
         const embed = new EmbedBuilder().setColor(config.embedColor)
         if (i === 0) {
