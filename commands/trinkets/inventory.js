@@ -58,10 +58,13 @@ async function inventory(interaction) {
         const pages = []
         let index = 0
         for (let i = 0; i < chunkCount; i++) {
-            const embed = new EmbedBuilder().setColor(config.embedColor)
             const lastIndex = index
             index = desc.indexOf('\n', (i+1)*CHUNK_SIZE) 
             index = (index === -1) ? (i+1)*CHUNK_SIZE : index + 1
+            let page = desc.substring(lastIndex, index)
+            if (page.endsWith('---')) {
+                index = desc.indexOf('\n', index + 1) 
+            }
 
             pages.push(desc.substring(lastIndex, index))
         }
