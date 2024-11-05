@@ -15,8 +15,7 @@ export default {
             .setName('hidden'))
             .setDescription('If true, command\'s output will not be visible to others')),
     async execute(interaction) {
-        const response = await inventory(interaction)
-        await interaction.reply(response)
+        await inventory(interaction)
     },
 }
 
@@ -24,7 +23,6 @@ export default {
 async function inventory(interaction) {
     try { 
         const user = interaction.options.getUser('user') ?? interaction.user
-        const ephemeral = interaction.options.getBoolean('hidden')
         const balance = await Users.getBalance(user.id, interaction.guild.id)
         const config = await Config.getConfig(interaction.guild.id)
         const trinkets = await Trinkets.getTrinkets(undefined, interaction.guild.id, user.id)
@@ -55,7 +53,7 @@ async function inventory(interaction) {
             }
         }
 
-        const CHUNK_SIZE = 800
+        const CHUNK_SIZE = 850
         const chunkCount = Math.ceil(desc.length / CHUNK_SIZE)
         const pages = []
         let index = 0
@@ -69,6 +67,8 @@ async function inventory(interaction) {
         }
 
         await handlePages(`${user.displayName}'s Inventory`, pages, interaction)
+
+
         
     } catch (e) {
         console.error(e)
