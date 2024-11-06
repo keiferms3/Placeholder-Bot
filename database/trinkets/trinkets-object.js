@@ -32,7 +32,7 @@ TrinketsObj.getTrinkets = async function (id = undefined, guildId = undefined, o
     try {
         //gross function... smelly function.... most of these model object functions are kinda stinky ngl
         if (id) {
-            return await TrinketsObj.findOne({ where: {trinketId: id}})
+            return await TrinketsObj.findOne({ where: {trinketId: id, guildId: guildId}})
         } else if (ownerId && guildId) {
             return await TrinketsObj.findAll({ where: {ownerId: ownerId, guildId: guildId} })
         } else if (creatorId && guildId) {
