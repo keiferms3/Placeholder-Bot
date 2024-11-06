@@ -7,7 +7,7 @@ export async function view(interaction) {
     const id = interaction.options.getInteger('id')
     let ephemeral = interaction.options.getBoolean('hidden')
 
-    const embeds = []
+    let embeds = []
     const trinket = await Trinkets.getTrinkets(id, interaction.guild.id)
     if (trinket) {
         if (ephemeral && trinket.creatorId === interaction.user.id) { 
