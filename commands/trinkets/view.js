@@ -28,7 +28,7 @@ export async function view(interaction) {
         }
         
     } else {
-        embeds = [new EmbedBuilder().setTitle(`:x: Trinket \`ID ${id}\` doesn't exist :x:`)]
+        embeds = [new EmbedBuilder().setTitle(`:x: Trinket \`ID ${id}\` doesn't exist :x:`).setColor(config.embedColor)]
         ephemeral = true
     }
     return {embeds: embeds, ephemeral: ephemeral}
