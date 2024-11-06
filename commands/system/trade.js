@@ -181,7 +181,7 @@ async function add(interaction) {
     //Trinkets
     for (const item of items) {
         if (!item) { continue }
-        const trinket = await Trinkets.getTrinkets(item)
+        const trinket = await Trinkets.getTrinkets(item, interaction.guild.id)
 
         if (!trinket) {
             errors += `Trinket \`#${item}\` doesn't exist!\n`

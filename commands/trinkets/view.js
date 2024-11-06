@@ -8,7 +8,7 @@ export async function view(interaction) {
     let ephemeral = interaction.options.getBoolean('hidden')
 
     const embeds = []
-    const trinket = await Trinkets.getTrinkets(id)
+    const trinket = await Trinkets.getTrinkets(id, interaction.guild.id)
     if (trinket) {
         if (ephemeral && trinket.creatorId === interaction.user.id) { 
             embeds.push(await display(trinket, interaction, config, false)) //If owner calls hidden view

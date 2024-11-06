@@ -10,7 +10,7 @@ export async function trinketReturn(interaction) {
 
     const embed = new EmbedBuilder()
         .setColor(config.embedColor)
-    const trinket = await Trinkets.getTrinkets(id)
+    const trinket = await Trinkets.getTrinkets(id, interaction.guild.id)
     if (trinket && trinket.ownerId === interaction.user.id) {
         //TODO, a lot, move all the returning stuff outta here, fix button handling such as checking user press, figure out how to communicate trinket between functions
         embed.setTitle(`Are you sure you want to return ${config[`rarityNameT${trinket.tier}`]} ${trinket.emoji}\`${trinket.name}\` \`(ID ${trinket.trinketId})\` to the gacha?`)
