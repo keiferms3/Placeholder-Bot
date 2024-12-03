@@ -200,6 +200,11 @@ export async function forgeReward(trinket, interaction, updateBal = true) {
     interest += interest * (config[`forgeRewardDailyT${trinket.tier}`] * (days - fullDays)) //Accrue unfinshed day's interest
     interest = Math.round(interest)
 
+    const maxInterest = config[`trinketCostT${trinket.tier}`] * config.forgeRewardMaxInterestMultiplier
+    if ((interest > maxInterest) && config.forgeRewardMaxInterestMultiplier > 0) { //Enforce maximum interest gain
+        interest = maxInterest
+    }
+
     if (updateBal) { //If updateBal is false, this function can be used to just calculate the reward value
         await Users.updateBalance(creator.userId, creator.guildId, interest)
     }

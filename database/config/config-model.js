@@ -40,7 +40,7 @@ export default (database, DataTypes) => {
             defaultValue: 300,
             allowNull: false,
         },
-        eightBallCost: {
+        eightBallCost: { //TODO?
             type: DataTypes.INTEGER,
             defaultValue: 100,
             allowNull: false,
@@ -130,6 +130,11 @@ export default (database, DataTypes) => {
             defaultValue: 0.03,
             allowNull: false,
         },
+        forgeRewardMaxInterestMultiplier: {
+            type: DataTypes.DOUBLE,
+            defaultValue: 6.0,
+            allowNull: false,
+        },
         returnRatioT1: {
             type: DataTypes.DOUBLE,
             defaultValue: 1.0,
@@ -145,7 +150,7 @@ export default (database, DataTypes) => {
             defaultValue: 1.0,
             allowNull: false,
         },
-        destroyRatio: {
+        destroyRatio: { //TODO 
             type: DataTypes.DOUBLE,
             defaultValue: 1.0,
             allowNull: false,
