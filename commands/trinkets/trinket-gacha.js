@@ -32,9 +32,6 @@ export async function rollGacha(interaction) {
     const user = await Users.getUser(interaction.user.id, interaction.guild.id)
     const trinkets = await Trinkets.getTrinkets(undefined, interaction.guild.id)
 
-    if (interaction.user == undefined) { //Ensure guild members are loaded into the cache
-            await interaction.guild.members.fetch() //I'm not quite sure why I did this here, but it probably fixed some bug and I'm too scared to remove it
-        } //Move the fetch to somewhere more consistent later, maybe the GuildMemberUpdate event
     
     const gachaTrinkets = [trinkets.filter(t => t.ownerId === 'gacha1'), trinkets.filter(t => t.ownerId === 'gacha2'), trinkets.filter(t => t.ownerId === 'gacha3')]
     gachaTrinkets.unshift(gachaTrinkets[0].concat(gachaTrinkets[1], gachaTrinkets[2]))
@@ -116,6 +113,9 @@ export async function rollGacha(interaction) {
         await UpdateGachaChance(trinket.tier, interaction) //Update gacha changes to reflect new trinket count
         const reward = await forgeReward(trinket, interaction) //Give trinket creator point reward
 
+        if (interaction.user == undefined) { //Ensure guild members are loaded into the cache
+            await interaction.guild.members.fetch() //This is very necessary and causes a crash when roll is spammed without it
+        }
         embed.setTitle(`:white_check_mark: ${interaction.user.displayName} got ${hiddden}${config[`rarityNameT${trinket.tier}`]} ${trinket.emoji}\`${trinket.name}\` \`(ID ${trinket.trinketId})\` :white_check_mark: `)
              .setDescription(`Created by ${interaction.client.users.cache.get(trinket.creatorId) ?? 'Unknown'} on <t:${Date.parse(trinket.createdAt) / 1000}:f>\n\n${trinket.description ?? ''}`)
              .setImage(trinket.image)
