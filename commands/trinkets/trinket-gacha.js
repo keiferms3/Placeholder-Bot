@@ -31,6 +31,10 @@ export async function rollGacha(interaction) {
     const config = await Config.getConfig(interaction.guild.id)
     const user = await Users.getUser(interaction.user.id, interaction.guild.id)
     const trinkets = await Trinkets.getTrinkets(undefined, interaction.guild.id)
+
+    if (interaction.user == undefined) { //Ensure guild members are loaded into the cache
+            await interaction.guild.members.fetch() //I'm not quite sure why I did this here, but it probably fixed some bug and I'm too scared to remove it
+        } //Move the fetch to somewhere more consistent later, maybe the GuildMemberUpdate event
     
     const gachaTrinkets = [trinkets.filter(t => t.ownerId === 'gacha1'), trinkets.filter(t => t.ownerId === 'gacha2'), trinkets.filter(t => t.ownerId === 'gacha3')]
     gachaTrinkets.unshift(gachaTrinkets[0].concat(gachaTrinkets[1], gachaTrinkets[2]))
@@ -49,7 +53,7 @@ export async function rollGacha(interaction) {
     Users.updateBalance(user.userId, user.guildId, -1*config.gachaRollCost)
     await interaction.reply({embeds: [embed]})
 
-    //Start async cosmetic rolling, WIP, maybe replace with available trinket icons cycling?
+    //Start async cosmetic rolling
     const animate = async () => {
         let dots = ''
         for (let i = 0; i < 6; i++) {
@@ -70,11 +74,11 @@ export async function rollGacha(interaction) {
     const result = randomFloat(0, 100)
 
     var trinket
-    const selectTrinket = async (tier) => {
+    const selectTrinket = (tier) => {
         if (tier <= 0) { return undefined }
         //const tierTrinkets = await Trinkets.getTrinkets(undefined, interaction.guild.id, `gacha${tier}`)
         if (gachaTrinkets[tier].length <= 0) {
-            return await selectTrinket(tier - 1)
+            return selectTrinket(tier - 1)
         } else {
             const result = randomInt(0, gachaTrinkets[tier].length - 1)
             return gachaTrinkets[tier][result]
@@ -84,11 +88,11 @@ export async function rollGacha(interaction) {
     if (result > chances[2]) {
         trinket = null
     } else if (result <= chances[0]) {
-        trinket = await selectTrinket(3)
+        trinket = selectTrinket(3)
     } else if (result <= chances[1]) {
-        trinket = await selectTrinket(2)
+        trinket = selectTrinket(2)
     } else if (result <= chances[2]) {
-        trinket = await selectTrinket(1)
+        trinket = selectTrinket(1)
     }
     
     //Wait for animation to finish
@@ -111,8 +115,7 @@ export async function rollGacha(interaction) {
 
         await UpdateGachaChance(trinket.tier, interaction) //Update gacha changes to reflect new trinket count
         const reward = await forgeReward(trinket, interaction) //Give trinket creator point reward
-        
-        await interaction.guild.members.fetch() //Load all guild users into cache
+
         embed.setTitle(`:white_check_mark: ${interaction.user.displayName} got ${hiddden}${config[`rarityNameT${trinket.tier}`]} ${trinket.emoji}\`${trinket.name}\` \`(ID ${trinket.trinketId})\` :white_check_mark: `)
              .setDescription(`Created by ${interaction.client.users.cache.get(trinket.creatorId) ?? 'Unknown'} on <t:${Date.parse(trinket.createdAt) / 1000}:f>\n\n${trinket.description ?? ''}`)
              .setImage(trinket.image)
