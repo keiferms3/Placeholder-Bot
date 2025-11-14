@@ -35,7 +35,6 @@ export async function view(interaction) {
 }
 
 async function display(trinket, interaction, config, hidden = false) {
-    await interaction.guild.members.fetch() // Load guild members into cache
     const rarity = config[`rarityNameT${trinket.tier}`]
     const owner = trinket.ownerId.includes('gacha') ? '*The Gacha*' : interaction.client.users.cache.get(trinket.ownerId) ?? 'Unknown'
     const creator = interaction.client.users.cache.get(trinket.creatorId) ?? 'Unknown'

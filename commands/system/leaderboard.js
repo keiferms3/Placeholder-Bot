@@ -161,7 +161,6 @@ async function trinketsOwnedValue(interaction) {
 async function handleLeaderboard(title, array, interaction, lineFunction) {
     const DISPLAY_NUM = 10
 
-    await interaction.guild.members.fetch() //To create cache
     const config = await Config.getConfig(interaction.guild.id)
     const ephemeral = interaction.options.getBoolean('hidden')
 

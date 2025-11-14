@@ -35,8 +35,12 @@ client.once(Events.ClientReady, async (readyClient) => {
 	client.gachaChances = new Collection()
 	await InitGachaChances(client)
 
+	//Setup for each guild
 	client.trades = new Collection()
-	for (const guild of client.guilds.cache) { client.trades.set(guild[0], []) }
+	for (const guild of client.guilds.cache.values()) { 
+		client.trades.set(guild[0], []) //Give every guild an empty list of active trades
+		await guild.members.fetch() //Cache the users of each guild
+	}
 
 	//Setup cronjobs
 	const daily = new CronJob('0 0 0 * * *', () => {
