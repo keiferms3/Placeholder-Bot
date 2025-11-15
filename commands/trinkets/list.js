@@ -4,7 +4,6 @@ import { clamp } from "../../helpers.js"
 import { setTimeout } from 'timers/promises'
 
 export async function list(interaction) {
-    await interaction.guild.members.fetch() // Load guild members into cache
     let pageNum = interaction.options.getInteger('page') ?? 1
     const createdBy = interaction.options.getUser('createdby')
     const ownedBy = interaction.options.getUser('ownedby')
@@ -107,7 +106,7 @@ export async function list(interaction) {
             const styling = (trinket.tier > 1) ? (trinket.tier > 2) ? '***' : '**' : '' //Nothing for 1, bold for 2, bold italics for 3
 
             if (trinket.hidden) {content += `**\`${trinket.trinketId}.\`** :question:${styling}\`???\`${styling}\n`; continue} //Don't display hidden trinkets
-            content += `**\`${trinket.trinketId}.\`** ${trinket.emoji}${styling}\`${trinket.name}\`${styling} ${trinket.ownerId.startsWith('gacha') ? `` : `| \`${owner.globalName ?? 'Unknown'}\``}\n`
+            content += `**\`${trinket.trinketId}.\`** ${trinket.emoji}${styling}\`${trinket.name}\`${styling} ${trinket.ownerId.startsWith('gacha') ? `` : `| \`${owner?.globalName ?? 'Unknown'}\``}\n`
         }
         embed.setDescription(content)
              .setFooter({text: `Page ${pageNum} / ${pages.length}`})

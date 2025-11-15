@@ -113,14 +113,15 @@ export async function rollGacha(interaction) {
         await UpdateGachaChance(trinket.tier, interaction) //Update gacha changes to reflect new trinket count
         const reward = await forgeReward(trinket, interaction) //Give trinket creator point reward
 
+        const creator = interaction.client.users.cache.get(trinket.creatorId)
         embed.setTitle(`:white_check_mark: ${interaction.user.displayName} got ${hiddden}${config[`rarityNameT${trinket.tier}`]} ${trinket.emoji}\`${trinket.name}\` \`(ID ${trinket.trinketId})\` :white_check_mark: `)
-             .setDescription(`Created by ${interaction.client.users.cache.get(trinket.creatorId)} on <t:${Date.parse(trinket.createdAt) / 1000}:f>\n\n${trinket.description ?? ''}`)
+             .setDescription(`Created by ${creator ?? 'Unknown'} on <t:${Date.parse(trinket.createdAt) / 1000}:f>\n\n${trinket.description ?? ''}`)
              .setImage(trinket.image)
         embeds.push(embed)
         if (reward > 0) {
             const rewardEmbed = new EmbedBuilder()
                 .setColor(config.embedColor)
-                .setTitle(`Forgemaster ${interaction.client.users.cache.get(trinket.creatorId).displayName} got \`${reward} PP\``)
+                .setTitle(`Forgemaster ${creator?.displayName ?? 'Unknown'} got \`${reward} PP\``)
             embeds.push(rewardEmbed)
         }
 
